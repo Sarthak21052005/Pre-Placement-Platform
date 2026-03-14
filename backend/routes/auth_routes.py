@@ -21,3 +21,10 @@ def check_email(email: str, db: Session = Depends(get_db)):
     if user:
         raise HTTPException(status_code=400, detail="Email already registered")
     return {email:"is not registered"}
+
+@router.get("/users/name/{name}")
+def get_user_by_name(name: str, db: Session = Depends(get_db)):
+    user = user_crud.get_user_by_name(db, name=name)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
