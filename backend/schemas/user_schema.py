@@ -7,9 +7,9 @@ class UserBase(BaseModel):
 
 class UserLogin(BaseModel):
     email: EmailStr
-    password: str = Field(min_length=6)
+    password: str
 
 class UserResponse(BaseModel):
     id : int = Field(gt=0)
     email : EmailStr
-    name : str = Field(min_length=3)
+    name : str = Field(min_length=3)      
