@@ -1,0 +1,315 @@
+[{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f139f8"
+  },
+  "title": "Two Sum",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Arrays",
+  "difficulty": "Easy",
+  "description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+  "tags": [
+    "array",
+    "hashmap"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f139f9"
+  },
+  "title": "Maximum Subarray",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Dynamic Programming",
+  "difficulty": "Easy",
+  "description": "Find the contiguous subarray with the largest sum using Kadane's Algorithm.",
+  "tags": [
+    "dp",
+    "array"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f139fa"
+  },
+  "title": "Next Greater Element",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Stack",
+  "difficulty": "Medium",
+  "description": "For each element in an array, find the next greater element to its right.",
+  "tags": [
+    "stack",
+    "array"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f139fb"
+  },
+  "title": "Count Distinct Elements in Every Window",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Sliding Window",
+  "difficulty": "Medium",
+  "description": "Given an array and window size k, count distinct elements in every window.",
+  "tags": [
+    "hashmap",
+    "sliding window"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f139fc"
+  },
+  "title": "First Non Repeating Character",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Strings",
+  "difficulty": "Easy",
+  "description": "Find the first non repeating character in a string.",
+  "tags": [
+    "string",
+    "hashmap"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f139fd"
+  },
+  "title": "Longest Univalue Path",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Binary Tree",
+  "difficulty": "Medium",
+  "description": "Find the length of the longest path where every node has the same value.",
+  "tags": [
+    "tree",
+    "dfs"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f139fe"
+  },
+  "title": "Search in Sorted Matrix",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Binary Search",
+  "difficulty": "Medium",
+  "description": "Search a value in a row-wise and column-wise sorted matrix.",
+  "tags": [
+    "binary search",
+    "matrix"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f139ff"
+  },
+  "title": "Spiral Matrix Traversal",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Matrix",
+  "difficulty": "Medium",
+  "description": "Print elements of a matrix in spiral order.",
+  "tags": [
+    "matrix"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f13a00"
+  },
+  "title": "Number of Islands",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Graph",
+  "difficulty": "Medium",
+  "description": "Given a grid of 1s and 0s, count the number of islands.",
+  "tags": [
+    "graph",
+    "dfs",
+    "bfs"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f13a01"
+  },
+  "title": "Maximum Area of Island",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Graph",
+  "difficulty": "Medium",
+  "description": "Find the maximum area of an island in a grid.",
+  "tags": [
+    "dfs",
+    "grid"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f13a02"
+  },
+  "title": "Longest Common Prefix",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Strings",
+  "difficulty": "Easy",
+  "description": "Find the longest common prefix among an array of strings.",
+  "tags": [
+    "string"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f13a03"
+  },
+  "title": "Longest Substring Without Repeating Characters",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Sliding Window",
+  "difficulty": "Medium",
+  "description": "Find the longest substring without repeating characters.",
+  "tags": [
+    "sliding window",
+    "hashmap"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f13a04"
+  },
+  "title": "Reverse Linked List",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Linked List",
+  "difficulty": "Easy",
+  "description": "Reverse a singly linked list.",
+  "tags": [
+    "linked list"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f13a05"
+  },
+  "title": "Merge K Sorted Lists",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Linked List",
+  "difficulty": "Hard",
+  "description": "Merge k sorted linked lists into one sorted list.",
+  "tags": [
+    "heap",
+    "linked list"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f13a06"
+  },
+  "title": "Linked List Cycle Detection",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Linked List",
+  "difficulty": "Easy",
+  "description": "Detect if a linked list has a cycle using Floyd's algorithm.",
+  "tags": [
+    "two pointers"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f13a07"
+  },
+  "title": "Zigzag Level Order Traversal",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Binary Tree",
+  "difficulty": "Medium",
+  "description": "Return the zigzag level order traversal of a binary tree.",
+  "tags": [
+    "tree",
+    "bfs"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f13a08"
+  },
+  "title": "Subtree of Another Tree",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Binary Tree",
+  "difficulty": "Easy",
+  "description": "Check if a tree is a subtree of another tree.",
+  "tags": [
+    "tree"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f13a09"
+  },
+  "title": "Top K Frequent Elements",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Heap",
+  "difficulty": "Medium",
+  "description": "Return the k most frequent elements in an array.",
+  "tags": [
+    "heap",
+    "hashmap"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f13a0a"
+  },
+  "title": "Search in Rotated Sorted Array",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Binary Search",
+  "difficulty": "Medium",
+  "description": "Search an element in a rotated sorted array.",
+  "tags": [
+    "binary search"
+  ]
+},
+{
+  "_id": {
+    "$oid": "69b68e7e1de7c3ac69f13a0b"
+  },
+  "title": "Word Ladder",
+  "company": [
+    "Amazon"
+  ],
+  "topic": "Graph",
+  "difficulty": "Hard",
+  "description": "Find the shortest transformation sequence from beginWord to endWord using BFS.",
+  "tags": [
+    "graph",
+    "bfs"
+  ]
+}]

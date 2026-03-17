@@ -1,5 +1,6 @@
+.gitignore
 # Virtual Environment
-virtual_env/
+virtualenv/
 venv/
 env/
 
