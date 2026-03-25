@@ -62,7 +62,7 @@ function Navbar({ search, setSearch }) {
 
         <div className="profile-section" ref={dropdownRef}>
           <div className="profile" onClick={() => setOpen(!open)}>
-            <img src="../logos/profile.jpg" alt="user" />
+            <img src="/logos/user.png" alt="user" />
           </div>
 
           {open && (

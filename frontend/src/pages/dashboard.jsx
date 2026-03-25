@@ -25,10 +25,9 @@ function DashBoard() {
 
       <div className="dashboard-container">
 
-        {/* 👤 USER CARD */}
         <div className="user-card">
-          <img src="/logos/profile.jpg" alt="user" />
-          <h2>Sarthak</h2>
+        <img src="/logos/user.png" alt="user" />
+          <h1>Sarthak</h1>
           <p>Placement Preparation 🚀</p>
         </div>
 
