@@ -1,0 +1,22 @@
+
+.sidebar {
+  width: 200px;
+  height: 100vh;
+  background-color: #011027f1;
+  color: white;
+  padding: 10px;
+  border: none;
+}
+.attributes
+{
+  border: none;
+  text-align: center;
+  padding: 10px;
+  transition: 0.2s;
+}
+.attributes:hover
+{
+  border-radius: 5px;
+  transform: scale(1.2);
+
+}

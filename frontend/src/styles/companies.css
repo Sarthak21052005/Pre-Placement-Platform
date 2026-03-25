@@ -1,0 +1,21 @@
+.dashboard {
+  display: flex;
+}
+
+.main-content {
+  flex: 1;
+  padding: 10px;
+  background-color: hsl(0, 0%, 80%);
+  min-height: 100vh;
+  padding-left: 20px;
+}
+.main-content h1
+{
+    font-size: 2.4rem;
+}
+.company-grid {
+  display: grid;
+  margin: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 30px;
+}

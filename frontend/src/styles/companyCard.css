@@ -1,0 +1,26 @@
+.company-card {
+  width: 180px;
+  height: 150px;
+  background: white;
+  border-radius: 10px;
+  display: flex;
+  font-size: 1rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.4s;
+}
+
+.company-card:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.company-card img {
+  width: 4rem;
+  display: flex;
+  justify-self: center;
+  align-items: center;
+  margin-top: 20px;
+}

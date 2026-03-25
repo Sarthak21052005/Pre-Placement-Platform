@@ -1,5 +1,5 @@
 from database.mongDB import questions_collection
-
+from bson import ObjectId
 def get_all_questions():
     questions = []
     for question in questions_collection.find():
@@ -22,10 +22,10 @@ def get_questions_by_company(company: str):
     return questions  
 
 def get_questions_by_id(question_id: str):
-    question = questions_collection.find_one({"_id": question_id})
+    question = questions_collection.find_one({"_id": ObjectId(question_id)})
     if question:
         question['_id'] = str(question['_id'])
-    return question  
+    return question 
 
 def get_questions_by_difficulty(difficulty: str):
     questions = []

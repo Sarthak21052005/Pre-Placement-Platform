@@ -1,20 +1,63 @@
-.gitignore
-# Virtual Environment
-virtual_env/
-venv/
-env/
-
-# Python cache
-__pycache__/
-*.pyc
-
-# Environment variables
+# ==============================
+# 🔐 ENV & SECRETS
+# ==============================
 .env
+.env.*
+frontend/.env
+backend/.env
 
-# VS Code
+# ==============================
+# 🐍 BACKEND (FastAPI)
+# ==============================
+backend/venv/
+backend/env/
+backend/virtual_env/
+
+backend/__pycache__/
+backend/*.pyc
+backend/*.pyo
+backend/*.pyd
+
+# ==============================
+# ⚛️ FRONTEND (React + Vite)
+# ==============================
+frontend/node_modules
+frontend/node_modules/es-object-atoms
+frontend/dist/
+frontend/dist-ssr/
+
+# Logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+# ==============================
+# 🧠 IDE & EDITOR FILES
+# ==============================
 .vscode/
+.idea/
 
-# OS files
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+
+# ==============================
+# 💻 OS FILES
+# ==============================
 .DS_Store
 Thumbs.db
 
+# ==============================
+# 📊 LOGS
+# ==============================
+logs/
+*.log
+
+# ==============================
+# 🧪 OPTIONAL (BUILD / CACHE)
+# ==============================
+*.cache

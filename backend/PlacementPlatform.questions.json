@@ -312,4 +312,167 @@
     "graph",
     "bfs"
   ]
-}]
+  
+},
+  {
+    "title": "3Sum",
+    "company": ["Google", "Amazon"],
+    "topic": "Arrays",
+    "difficulty": "Medium",
+    "description": "Find all unique triplets in the array which gives the sum of zero.",
+    "tags": ["array", "two pointers"]
+  },
+  {
+    "title": "Container With Most Water",
+    "company": ["Google", "Meta"],
+    "topic": "Two Pointers",
+    "difficulty": "Medium",
+    "description": "Find two lines that together with x-axis form a container that holds the most water.",
+    "tags": ["two pointers"]
+  },
+  {
+    "title": "Product of Array Except Self",
+    "company": ["Meta", "Amazon"],
+    "topic": "Arrays",
+    "difficulty": "Medium",
+    "description": "Return an array such that each element is the product of all elements except itself.",
+    "tags": ["array"]
+  },
+  {
+    "title": "Climbing Stairs",
+    "company": ["Microsoft", "Amazon"],
+    "topic": "Dynamic Programming",
+    "difficulty": "Easy",
+    "description": "Find number of ways to climb stairs.",
+    "tags": ["dp"]
+  },
+  {
+    "title": "Coin Change",
+    "company": ["Microsoft", "Google"],
+    "topic": "Dynamic Programming",
+    "difficulty": "Medium",
+    "description": "Find minimum coins required to make amount.",
+    "tags": ["dp"]
+  },
+  {
+    "title": "LRU Cache",
+    "company": ["Google", "Meta", "Amazon"],
+    "topic": "Design",
+    "difficulty": "Medium",
+    "description": "Design a data structure that follows LRU cache policy.",
+    "tags": ["design", "hashmap"]
+  },
+  {
+    "title": "Binary Tree Level Order Traversal",
+    "company": ["Microsoft", "Google"],
+    "topic": "Binary Tree",
+    "difficulty": "Medium",
+    "description": "Return level order traversal of a binary tree.",
+    "tags": ["tree", "bfs"]
+  },
+  {
+    "title": "Diameter of Binary Tree",
+    "company": ["Meta", "Amazon"],
+    "topic": "Binary Tree",
+    "difficulty": "Easy",
+    "description": "Find the diameter of a binary tree.",
+    "tags": ["tree"]
+  },
+  {
+    "title": "Kth Largest Element in Array",
+    "company": ["Google", "Amazon"],
+    "topic": "Heap",
+    "difficulty": "Medium",
+    "description": "Find kth largest element in an unsorted array.",
+    "tags": ["heap"]
+  },
+  {
+    "title": "Course Schedule",
+    "company": ["Google", "Meta"],
+    "topic": "Graph",
+    "difficulty": "Medium",
+    "description": "Determine if you can finish all courses.",
+    "tags": ["graph", "topological sort"]
+  },
+  {
+    "title": "Meeting Rooms II",
+    "company": ["Meta", "Google"],
+    "topic": "Heap",
+    "difficulty": "Medium",
+    "description": "Find minimum number of meeting rooms required.",
+    "tags": ["heap"]
+  },
+  {
+    "title": "Longest Palindromic Substring",
+    "company": ["Amazon", "Microsoft"],
+    "topic": "Strings",
+    "difficulty": "Medium",
+    "description": "Find the longest palindromic substring.",
+    "tags": ["string"]
+  },
+  {
+    "title": "Valid Parentheses",
+    "company": ["Google", "Infosys"],
+    "topic": "Stack",
+    "difficulty": "Easy",
+    "description": "Check if parentheses are valid.",
+    "tags": ["stack"]
+  },
+  {
+    "title": "Minimum Window Substring",
+    "company": ["Google", "Meta"],
+    "topic": "Sliding Window",
+    "difficulty": "Hard",
+    "description": "Find minimum window substring containing all characters.",
+    "tags": ["sliding window"]
+  },
+  {
+    "title": "Rotate Image",
+    "company": ["Microsoft", "Amazon"],
+    "topic": "Matrix",
+    "difficulty": "Medium",
+    "description": "Rotate a matrix by 90 degrees.",
+    "tags": ["matrix"]
+  },
+  {
+    "title": "Set Matrix Zeroes",
+    "company": ["Amazon", "Google"],
+    "topic": "Matrix",
+    "difficulty": "Medium",
+    "description": "Set entire row and column to zero if element is zero.",
+    "tags": ["matrix"]
+  },
+  {
+    "title": "Best Time to Buy and Sell Stock",
+    "company": ["Amazon", "Google"],
+    "topic": "Arrays",
+    "difficulty": "Easy",
+    "description": "Find max profit from stock prices.",
+    "tags": ["array"]
+  },
+  {
+    "title": "House Robber",
+    "company": ["Google", "Microsoft"],
+    "topic": "Dynamic Programming",
+    "difficulty": "Medium",
+    "description": "Maximize money without robbing adjacent houses.",
+    "tags": ["dp"]
+  },
+  {
+    "title": "Trapping Rain Water",
+    "company": ["Amazon", "Google"],
+    "topic": "Two Pointers",
+    "difficulty": "Hard",
+    "description": "Compute trapped rain water.",
+    "tags": ["two pointers"]
+  },
+  {
+    "title": "Merge Intervals",
+    "company": ["Google", "Meta"],
+    "topic": "Intervals",
+    "difficulty": "Medium",
+    "description": "Merge overlapping intervals.",
+    "tags": ["intervals"]
+  }
+
+]
