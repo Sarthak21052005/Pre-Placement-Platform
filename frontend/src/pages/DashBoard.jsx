@@ -2,21 +2,18 @@ import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar"
 import CompanyCard from "../components/CompanyCard";
 import { useNavigate } from "react-router-dom";
-import "../styles/dashboard.css";
-import amazonlogo  from "../logos/amazon.png";
-import googlelogo from "../logos/google.png";
-import microsoftlogo from "../logos/microsoft.png";
-// import Infosyslogo from "../logos/infosys.png";
-import Netfixlogo from "../logos/netflix.png";
+import "../styles/dashboard.css"; 
 function Dashboard() {
   const navigate = useNavigate();
-
-  const companies = [
-    { name: "Amazon", logo: amazonlogo},
-    { name: "Google", logo: googlelogo },
-    { name: "Microsoft", logo: microsoftlogo},
-    { name: "Netflix" , logo: Netfixlogo}
-  ];
+ const companies = [
+  { name: "Amazon", logo: "/logos/amazon.png" },
+  { name: "Google", logo: "/logos/google.png" },
+  { name: "Microsoft", logo: "/logos/microsoft.png" },
+  { name: "Infosys", logo: "/logos/infosys.jpg" },
+  { name: "Netflix", logo: "/logos/netflix.png" },
+  { name: "Meta", logo: "/logos/meta.png"},
+  {name : "Apple" , logo : "/logos/apple.png"}
+];
 
   return (
     <>
@@ -26,8 +23,7 @@ function Dashboard() {
         <Sidebar />
 
         <div className="main-content">
-          <h1>Select a Company</h1>
-
+          <h1>Top Companies</h1>
           <div className="company-grid">
             {companies.map(c => (
               <CompanyCard

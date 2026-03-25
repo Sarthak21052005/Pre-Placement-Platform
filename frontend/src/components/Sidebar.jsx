@@ -3,9 +3,9 @@ import "../styles/sidebar.css";
 function Sidebar() {
   return (
     <div className="sidebar">
-      <p>Dashboard</p>
-      <p>Companies</p>
-      <p>Profile</p>
+      <p className="attributes">Profile</p>
+      <p className="attributes">Topics</p>
+      <p className="attributes">Settings</p>
     </div>
   );
 }

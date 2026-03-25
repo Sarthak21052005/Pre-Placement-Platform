@@ -9,12 +9,12 @@ function Navbar() {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    navigate("/register");
+    navigate("/login");
   };
 
   return (
     <div className="navbar">
-      <h1 className="logo">Hire Path </h1>
+      <h1 className="logo">Hire Path</h1>
 
       <div className="nav-right">
         <p className="welcome">Welcome, {user} 👋</p>

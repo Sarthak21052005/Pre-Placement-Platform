@@ -15,7 +15,7 @@ function Questions() {
 
   return (
     <div className="questions-container">
-      <h2>{company} Questions</h2>
+      <h1>Top {company} Questions</h1>
 
       {Array.isArray(questions) &&
         questions.map(q => (
