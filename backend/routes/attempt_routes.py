@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from database.database import get_db
 from schemas.attempt_schema import AttemptCreate
-from CRUD.attempts_crud import create_attempt, get_user_attempts, get_user_stats,get_all_attempts
+from CRUD.attempts_crud import create_attempt, get_user_attempts, get_user_stats, get_all_attempts
 
 router = APIRouter()
 
