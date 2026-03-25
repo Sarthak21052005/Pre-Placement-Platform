@@ -1,0 +1,11 @@
+.detail-container {
+  padding: 30px;
+}
+
+.detail-container h2 {
+  margin-bottom: 10px;
+}
+
+.detail-container p {
+  line-height: 1.6;
+}
