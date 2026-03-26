@@ -1,17 +1,78 @@
-    .questions-container {
-  padding: 20px;
+/* 🌐 Container */
+.questions-container {
+  padding: 40px;
 }
 
+/* 🔥 Heading */
+.questions-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #1f2937;
+}
+
+/* 📦 Question Card */
 .question-card {
-  background-color:white;
-  margin: 10px 0;
-  padding: 15px;
-  border-radius: 8px;
-  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: white;
+  padding: 18px 25px;
+  margin-bottom: 15px;
+
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+
   transition: 0.3s;
 }
 
-
 .question-card:hover {
-  background-color: hsl(0, 0%, 76%);
+  transform: translateY(-3px);
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* 🧠 Title */
+.question-card h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #111827;
+}
+
+
+/* 🎯 Difficulty */
+.question-card p {
+  margin-top: 5px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* RIGHT SIDE */
+.question-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* DOT */
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* TEXT */
+.difficulty {
+  font-size: 20px;
+}
+
+/* COLORS */
+.easy {
+  color: #16a34a;
+}
+.medium {
+  color: #f59e0b;
+}
+
+.hard {
+  color: #dc2626;
 }

@@ -9,10 +9,13 @@ def get_all_questions():
 
 def get_questions_by_topic(topic: str):
     questions = []
-    for question in questions_collection.find({"topic": topic}):
+    for question in questions_collection.find({
+        "topic": {"$regex": topic, "$options": "i"}   # 🔥 FIX
+    }):
         question['_id'] = str(question['_id'])
         questions.append(question)
     return questions
+
 
 def get_questions_by_company(company: str):
     questions = []
