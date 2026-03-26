@@ -11,15 +11,11 @@ function Navbar({ search, setSearch }) {
 const user = localStorage.getItem("user_name") || "User";
 
   const logout = () => {
-    localStorage.removeItem("token");
-  const logout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("user_id");
   localStorage.removeItem("user_name"); 
   navigate("/login");
 };
-    navigate("/login");
-  };
 
   const isSearchEnabled = search !== undefined && setSearch !== undefined;
 

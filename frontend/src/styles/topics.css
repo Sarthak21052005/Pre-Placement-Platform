@@ -1,0 +1,42 @@
+/* 🌐 Container */
+.topics-container {
+    padding: 0px 30px;
+  text-align: center;
+}
+
+/* 🔥 Heading */
+.topics-container h1 {
+  font-size: 50px;
+  margin-bottom: 30px;
+  color: #1f2937;
+}
+
+/* 📦 Grid Layout */
+.topics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+/* 🎯 Topic Card */
+.topic-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+/* ✨ Hover Effect */
+.topic-card:hover {
+  background: #2563eb;
+  color: white;
+  transform: translateY(-5px);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+}

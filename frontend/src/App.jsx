@@ -6,6 +6,8 @@ import QuestionDetail from "./pages/QuestionsDetail";
 import Companies from "./pages/Companies"
 import Navbar from "./components/Navbar";
 import DashBoard from "./pages/DashBoard";
+import Topics from "./pages/Topics";
+import TopicQuestions from "./pages/TopicQuestions";
 function App() {
   return (
     <BrowserRouter>
@@ -15,6 +17,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/Companies" element={<Companies/>} />
         <Route path="/dashboard" element={<DashBoard/>} />
+        <Route path="/topics" element = {<Topics/>}/> 
+        <Route path="/topics/:topic" element ={<TopicQuestions/>}/>
         <Route path="/questions/company/:company" element={<Questions />} />
         <Route path="/questions/:id" element={<QuestionDetail />} />
       </Routes>
