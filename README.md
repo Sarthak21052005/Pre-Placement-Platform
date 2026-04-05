@@ -141,6 +141,10 @@ Stores:
 
 ### Frontend (React)
 
+* DashBoard Page
+* Companies Page
+* Topics Page
+* TopicQuestions Page
 * Login Page
 * Register Page
 * Question List Page
@@ -164,8 +168,8 @@ Stores:
 2. PostgreSQL integration (Completed ✅)
 3. Authentication system (Completed ✅)
 4. MongoDB question storage (Completed ✅)
-5. Frontend (React) (Next 🔜)
-6. Submission system (Upcoming)
+5. Frontend (React) (Working ⚒️)
+6. Submission system (Upcoming ⏭️)
 7. AI integration (Future 🚀)
 
 ---
