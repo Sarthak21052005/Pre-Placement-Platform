@@ -6,9 +6,9 @@ from CRUD import user_crud
 from schemas.user_schema import UserBase , UserResponse , UserLogin
 from core.jwt_handler import create_access_token
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(prefix= "/auth", tags=["auth"])
 
-@router.post("/auth/register", response_model=UserResponse)
+@router.post("/register", response_model=UserResponse)
 def register(user: UserBase, db: Session = Depends(get_db)):
     db_user = user_crud.get_user_by_email(db, email=user.email)
     if db_user:
@@ -17,7 +17,7 @@ def register(user: UserBase, db: Session = Depends(get_db)):
     new_user = user_crud.create_user(db, user=user, hashed_password=hashed_password)
     return new_user
 
-@router.post("/auth/login")
+@router.post("/login")
 def login(user: UserLogin, db: Session = Depends(get_db)):
     db_user = user_crud.get_user_by_email(db, email=user.email)
 

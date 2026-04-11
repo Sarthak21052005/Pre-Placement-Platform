@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from database.database import get_db
 from models.user import User
 
-router = APIRouter(prefix="/Users", tags=["Users"])
+router = APIRouter()
 
 @router.get("/user/{user_id}")
 def get_user(user_id: int, db: Session = Depends(get_db)):
