@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from CRUD import questions_crud
 
-router = APIRouter()
+router = APIRouter(prefix = "/Questions" , tags = ["Questions"])
 
 @router.get("/questions")
 def read_all_questions():

@@ -6,7 +6,7 @@ from CRUD import user_crud
 from schemas.user_schema import UserBase , UserResponse , UserLogin
 from core.jwt_handler import create_access_token
 
-router = APIRouter()
+router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.post("/register", response_model=UserResponse)
 def register(user: UserBase, db: Session = Depends(get_db)):
