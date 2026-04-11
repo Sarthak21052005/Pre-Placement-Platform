@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { registerUser } from "../services/api";
-import { useNavigate } from "react-router-dom";
-import "../styles/login.css"; 
+import { registerUser, registerAdmin } from "../services/api";
+import { useNavigate, useLocation } from "react-router-dom";
+import "../styles/login.css";
 
 function Register() {
   const [form, setForm] = useState({
@@ -11,6 +11,10 @@ function Register() {
   });
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // 🔥 detect role from route
+  const isAdmin = location.pathname.includes("admin");
 
   const handleChange = (e) => {
     setForm({
@@ -22,9 +26,11 @@ function Register() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    registerUser(form)
+    const apiCall = isAdmin ? registerAdmin : registerUser;
+
+    apiCall(form)
       .then(res => {
-        alert("Registered Successfully");
+        alert(isAdmin ? "Admin Registered Successfully" : "User Registered Successfully");
         navigate("/login");
       })
       .catch(err => {
@@ -35,7 +41,14 @@ function Register() {
   return (
     <div className="page-center">
       <div className="auth-card">
-        <h1>Register</h1>
+
+        {/* 🔥 ROLE INDICATOR */}
+        <div className="role-switch">
+          <button className={!isAdmin ? "active" : ""}>User</button>
+          <button className={isAdmin ? "active" : ""}>Admin</button>
+        </div>
+
+        <h1>{isAdmin ? "Admin Register" : "User Register"}</h1>
 
         <form onSubmit={handleSubmit}>
           <input

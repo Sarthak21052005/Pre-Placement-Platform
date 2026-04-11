@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { loginUser } from "../services/api";
+import { loginUser, loginAdmin } from "../services/api";
 import { useNavigate } from "react-router-dom";
 import "../styles/login.css";
 
@@ -8,6 +8,8 @@ function Login() {
     email: "",
     password: ""
   });
+
+  const [role, setRole] = useState("user");
 
   const navigate = useNavigate();
 
@@ -18,56 +20,97 @@ function Login() {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    loginUser(form)
-      .then(res => {
-       localStorage.setItem("token", res.data.access_token);
-      localStorage.setItem("user_id", res.data.user.id);
-      localStorage.setItem("user_name", res.data.user.name);
-      navigate("/dashboard")
-      })
-      .catch(err => {
-        alert("Login failed");
-      });
-  };
+  const apiCall = role === "admin" ? loginAdmin : loginUser;
 
-  return (
-    <div className="page-center">
-      <div className="auth-card">
-        <h1>Login</h1>
+  apiCall(form)
+    .then(res => {
+      const token = res.data.access_token;
 
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            onChange={handleChange}
-          />
+      if (!token) {
+        alert("No token received");
+        return;
+      }
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            onChange={handleChange}
-          />
+      localStorage.setItem("token", token);
 
-          <button type="submit">Sign In</button>
-        </form>
+      if (role === "admin") {
+        localStorage.setItem("admin_id", res.data.admin.id);
+        localStorage.setItem("admin_name", res.data.admin.name);
+        localStorage.setItem("role", "admin");
 
-        <p>
-          Don't have an account?{" "}
-          <span
-            onClick={() => navigate("/register")}
-            style={{ color: "#2563eb", cursor: "pointer" }}
-          >
-            Register
-          </span>
-        </p>
+        setTimeout(() => {
+          navigate("/admin/dashboard");
+        }, 100); // 🔥 important
+      } else {
+        localStorage.setItem("user_id", res.data.user.id);
+        localStorage.setItem("user_name", res.data.user.name);
+        localStorage.setItem("role", "user");
+
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 100);
+      }
+    })
+    .catch(() => {
+      alert("Login failed");
+    });
+};
+return (
+  <div className="page-center">
+    <div className="auth-card">
+      <div className="role-switch">
+        <button
+          className={role === "user" ? "active" : ""}
+          onClick={() => setRole("user")}
+        >
+          User
+        </button>
+
+        <button
+          className={role === "admin" ? "active" : ""}
+          onClick={() => setRole("admin")}
+        >
+          Admin
+        </button>
       </div>
-    </div>
-  );
-}
 
+      <h1>{role === "admin" ? "Admin Login" : "User Login"}</h1>
+
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          onChange={handleChange}
+        />
+
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          onChange={handleChange}
+        />
+
+        <button type="submit">Sign In</button>
+      </form>
+    <p>
+    {role === "admin"
+      ? "Create an admin account"
+      : "Don't have an account?"}{" "}
+    <span
+      onClick={() =>
+      navigate(role === "admin" ? "/admin/register" : "/register")
+    }
+    style={{ color: "#2563eb", cursor: "pointer", fontWeight: "500" }}
+    >
+    Register
+  </span>
+</p>
+    </div>
+  </div>
+);
+}
 export default Login;

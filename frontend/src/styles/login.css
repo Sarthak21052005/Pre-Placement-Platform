@@ -39,3 +39,25 @@
 {
   background-color: #427af3;
 }
+.role-switch {
+  display: flex;
+  border-bottom: 2px solid #ddd ;
+  margin-bottom: 15px;
+}
+
+.role-switch button:hover {
+  background-color: #f0f0f0;
+}
+.role-switch button {
+  flex: 1;
+  color: black;
+  padding: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.role-switch button.active {
+  border-bottom: 3px solid #2563eb;
+  color: #2563eb;;
+}
