@@ -1,5 +1,8 @@
 from pydantic import EmailStr  , BaseModel , Field
 
+# Given to me by Sarthak :- 
+#** PYdantic : verification ke liye 
+
 class AdminBase(BaseModel):
     email : EmailStr
     name : str = Field( min_length=3 , max_length=14)

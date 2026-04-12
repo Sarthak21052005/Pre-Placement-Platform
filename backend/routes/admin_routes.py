@@ -2,21 +2,19 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from database.database import get_db
-
 from models.user import User
 from models.admin import Admin
-
+from bson import ObjectId
+from database.mongDB import questions_collection
 from schemas.admin_schema import AdminLogin, AdminBase, AdminResponse
 from CRUD.admin_crud import create_admin
-
 from core.security import get_password_hash, verify_password
 from core.jwt_handler import create_access_token
 
-from database.mongDB import questions_collection
-from bson import ObjectId
-
 from jose import jwt, JWTError
 import os
+
+#--------------------------------------
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
@@ -24,7 +22,6 @@ security = HTTPBearer()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-
 def get_current_admin(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
@@ -53,7 +50,6 @@ def register(admin: AdminBase, db: Session = Depends(get_db)):
 
     return create_admin(db, user=admin, hashedpassword=hashed_password)
 
-
 @router.post("/login")
 def login(admin: AdminLogin, db: Session = Depends(get_db)):
     db_admin = db.query(Admin).filter(Admin.email == admin.email).first()
@@ -74,8 +70,6 @@ def login(admin: AdminLogin, db: Session = Depends(get_db)):
             "email": db_admin.email
         }
     }
-
-
 @router.get("/questions/all")
 def get_all_questions(admin=Depends(get_current_admin)):
     questions = list(questions_collection.find())
@@ -103,7 +97,6 @@ def add_question(question: dict, admin=Depends(get_current_admin)):
         "id": str(result.inserted_id)
     }
 
-
 @router.delete("/questions/{question_id}")
 def delete_question(question_id: str, admin=Depends(get_current_admin)):
     try:
@@ -118,7 +111,6 @@ def delete_question(question_id: str, admin=Depends(get_current_admin)):
 
     return {"message": "Question deleted"}
 
-
 @router.get("/users/all")
 def get_all_users(admin=Depends(get_current_admin), db: Session = Depends(get_db)):
     users = db.query(User).all()
@@ -131,7 +123,6 @@ def get_all_users(admin=Depends(get_current_admin), db: Session = Depends(get_db
         }
         for u in users
     ]
-
 
 @router.delete("/users/{user_id}")
 def delete_user(user_id: int, admin=Depends(get_current_admin), db: Session = Depends(get_db)):

@@ -7,11 +7,9 @@ class Example(BaseModel):
     output: str
     explanation: Optional[str] = None
 
-
 class TestCase(BaseModel):
     input: str
     expected_output: str
-
 
 class Question(BaseModel):
     title: str
@@ -24,5 +22,4 @@ class Question(BaseModel):
     examples: Optional[List[Example]] = []
     constraints: Optional[List[str]] = []
     testcases: Optional[List[TestCase]] = []
-
     tags: List[str]
