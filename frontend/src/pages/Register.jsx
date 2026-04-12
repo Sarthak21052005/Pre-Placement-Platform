@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { registerUser, registerAdmin } from "../services/api";
 import { useNavigate, useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
 import "../styles/login.css";
 
 function Register() {
@@ -10,10 +11,11 @@ function Register() {
     password: ""
   });
 
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 🔥 detect role from route
   const isAdmin = location.pathname.includes("admin");
 
   const handleChange = (e) => {
@@ -23,26 +25,39 @@ function Register() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!form.name || !form.email || !form.password) {
+      return toast.error("Fill all fields");
+    }
 
     const apiCall = isAdmin ? registerAdmin : registerUser;
 
-    apiCall(form)
-      .then(res => {
-        alert(isAdmin ? "Admin Registered Successfully" : "User Registered Successfully");
-        navigate("/login");
-      })
-      .catch(err => {
-        alert("Registration failed");
-      });
+    setLoading(true);
+
+    try {
+      await apiCall(form);
+
+      toast.success(
+        isAdmin
+          ? "Admin registered successfully"
+          : "User registered successfully"
+      );
+
+      setTimeout(() => navigate("/login"), 300);
+
+    } catch {
+      toast.error("Registration failed");
+    }
+
+    setLoading(false);
   };
 
   return (
     <div className="page-center">
       <div className="auth-card">
 
-        {/* 🔥 ROLE INDICATOR */}
         <div className="role-switch">
           <button className={!isAdmin ? "active" : ""}>User</button>
           <button className={isAdmin ? "active" : ""}>Admin</button>
@@ -72,7 +87,9 @@ function Register() {
             onChange={handleChange}
           />
 
-          <button type="submit">Sign Up</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Creating..." : "Sign Up"}
+          </button>
         </form>
 
         <p>
@@ -84,6 +101,7 @@ function Register() {
             Login
           </span>
         </p>
+
       </div>
     </div>
   );

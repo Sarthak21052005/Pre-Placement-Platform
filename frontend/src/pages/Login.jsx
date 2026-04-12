@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { loginUser, loginAdmin } from "../services/api";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import "../styles/login.css";
 
 function Login() {
@@ -10,6 +11,7 @@ function Login() {
   });
 
   const [role, setRole] = useState("user");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -20,17 +22,23 @@ function Login() {
     });
   };
 
-const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const apiCall = role === "admin" ? loginAdmin : loginUser;
+    if (!form.email || !form.password) {
+      return toast.error("Fill all fields");
+    }
 
-  apiCall(form)
-    .then(res => {
+    const apiCall = role === "admin" ? loginAdmin : loginUser;
+
+    setLoading(true);
+
+    try {
+      const res = await apiCall(form);
       const token = res.data.access_token;
 
       if (!token) {
-        alert("No token received");
+        toast.error("No token received");
         return;
       }
 
@@ -41,76 +49,85 @@ const handleSubmit = (e) => {
         localStorage.setItem("admin_name", res.data.admin.name);
         localStorage.setItem("role", "admin");
 
-        setTimeout(() => {
-          navigate("/admin/dashboard");
-        }, 100); // 🔥 important
+        toast.success("Admin login successful");
+
+        setTimeout(() => navigate("/admin/dashboard"), 300);
       } else {
         localStorage.setItem("user_id", res.data.user.id);
         localStorage.setItem("user_name", res.data.user.name);
         localStorage.setItem("role", "user");
 
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 100);
+        toast.success("Login successful");
+
+        setTimeout(() => navigate("/dashboard"), 300);
       }
-    })
-    .catch(() => {
-      alert("Login failed");
-    });
-};
-return (
-  <div className="page-center">
-    <div className="auth-card">
-      <div className="role-switch">
-        <button
-          className={role === "user" ? "active" : ""}
-          onClick={() => setRole("user")}
-        >
-          User
-        </button>
 
-        <button
-          className={role === "admin" ? "active" : ""}
-          onClick={() => setRole("admin")}
-        >
-          Admin
-        </button>
-      </div>
-
-      <h1>{role === "admin" ? "Admin Login" : "User Login"}</h1>
-
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
-        />
-
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          onChange={handleChange}
-        />
-
-        <button type="submit">Sign In</button>
-      </form>
-    <p>
-    {role === "admin"
-      ? "Create an admin account"
-      : "Don't have an account?"}{" "}
-    <span
-      onClick={() =>
-      navigate(role === "admin" ? "/admin/register" : "/register")
+    } catch {
+      toast.error("Invalid email or password");
     }
-    style={{ color: "#2563eb", cursor: "pointer", fontWeight: "500" }}
-    >
-    Register
-  </span>
-</p>
+
+    setLoading(false);
+  };
+
+  return (
+    <div className="page-center">
+      <div className="auth-card">
+
+        <div className="role-switch">
+          <button
+            className={role === "user" ? "active" : ""}
+            onClick={() => setRole("user")}
+          >
+            User
+          </button>
+
+          <button
+            className={role === "admin" ? "active" : ""}
+            onClick={() => setRole("admin")}
+          >
+            Admin
+          </button>
+        </div>
+
+        <h1>{role === "admin" ? "Admin Login" : "User Login"}</h1>
+
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            onChange={handleChange}
+          />
+
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            onChange={handleChange}
+          />
+
+          <button type="submit" disabled={loading}>
+            {loading ? "Signing in..." : "Sign In"}
+          </button>
+        </form>
+
+        <p>
+          {role === "admin"
+            ? "Create an admin account"
+            : "Don't have an account?"}{" "}
+          <span
+            onClick={() =>
+              navigate(role === "admin" ? "/admin/register" : "/register")
+            }
+            style={{ color: "#2563eb", cursor: "pointer", fontWeight: "500" }}
+          >
+            Register
+          </span>
+        </p>
+
+      </div>
     </div>
-  </div>
-);
+  );
 }
+
 export default Login;

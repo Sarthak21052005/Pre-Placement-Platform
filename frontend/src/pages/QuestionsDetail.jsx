@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
+import toast  from "react-hot-toast";
 import { getQuestionById } from "../services/api";
 import Navbar from "../components/Navbar";
 import Editor from "@monaco-editor/react";
@@ -13,9 +14,10 @@ function QuestionDetail() {
   const [code, setCode] = useState("");
   const [leftWidth, setLeftWidth] = useState(50);
   const isChangingLanguage = useRef(false);
+const [submitLoading, setSubmitLoading] = useState(false);
+const [runLoading, setRunLoading] = useState(false);
 
 
-  // ✅ LOAD QUESTION
   useEffect(() => {
     getQuestionById(id)
       .then((res) => setQuestion(res.data))
@@ -58,24 +60,23 @@ function QuestionDetail() {
       savedCode !== (TEMPLATES[language] ?? "");
 
     if (isModified) {
-      const confirmSwitch = window.confirm(
-        "Switch language? Your code is saved and will be restored."
-      );
+    const confirmSwitch = window.confirm("Switch language?");
       if (!confirmSwitch) return;
     }
 
     setLanguage(lang);
   };
 
-  // ✅ RESET TEMPLATE
   const handleReset = () => {
-    const confirmReset = window.confirm("Reset to default template?");
-    if (!confirmReset) return;
+  const confirmReset = window.confirm("Reset code?");
+  if (!confirmReset) return;
 
-    const template = TEMPLATES[language] ?? "";
-    setCode(template);
-    localStorage.setItem(`code_${id}_${language}`, template);
-  };
+  const template = TEMPLATES[language] ?? "";
+  setCode(template);
+  localStorage.setItem(`code_${id}_${language}`, template);
+
+  toast.success("Code reset");
+};
 
   // ✅ RESIZE
   const handleDrag = useCallback((e) => {
@@ -92,32 +93,45 @@ function QuestionDetail() {
     document.addEventListener("mousemove", handleDrag);
     document.addEventListener("mouseup", handleMouseUp);
   }, [handleDrag, handleMouseUp]);
+const handleSubmit = async () => {
+  const userId = localStorage.getItem("user_id");
 
-  // ✅ SUBMIT
-  const handleSubmit = () => {
-    const userId = localStorage.getItem("user_id");
-    if (!userId) {
-      alert("Please login first");
-      return;
-    }
+  if (!userId) {
+    toast.error("Please login first");
+    return;
+  }
 
-    axios
-      .post("http://localhost:8000/attempts", {
-        user_id: userId,
-        question_id: id,
-        status: "solved",
-      })
-      .then(() => alert("✅ Submitted successfully!"))
-      .catch(() => alert("❌ Submission failed"));
-  };
+  setSubmitLoading(true);
 
-    // ✅ RUN (MOCK)
-  const handleRun = () => {
+  try {
+    await axios.post("http://localhost:8000/attempts", {
+      user_id: userId,
+      question_id: id,
+      status: "solved",
+    });
+
+    toast.success("Submitted successfully");
+  } catch {
+    toast.error("Submission failed");
+  }
+
+  setSubmitLoading(false);
+};
+
+const handleRun = async () => {
+  setRunLoading(true);
+
+  try {
     console.log(code);
-    alert("🚀 Code executed (mock)");
-  };
+    toast.success("Code executed");
+  } catch {
+    toast.error("Execution failed");
+  }
 
-  if (!question) return <p>Loading...</p>;
+  setRunLoading(false);
+};
+
+if (!question) return <p className="loading">Loading question...</p>;
 
   return (
     <>
@@ -156,8 +170,13 @@ function QuestionDetail() {
 
             <div className="editor-actions">
               <button onClick={handleReset}>Reset</button>
-              <button className="run-btn" onClick={handleRun}>Run</button>
-              <button className="submit-btn" onClick={handleSubmit}>Submit</button>
+             <button className="run-btn" onClick={handleRun} disabled={runLoading}>
+              {runLoading ? "Running..." : "Run"}
+              </button>
+
+              <button className="submit-btn" onClick={handleSubmit} disabled={submitLoading}>
+              {submitLoading ? "Submitting..." : "Submit"}
+              </button>
             </div>
           </div>
 

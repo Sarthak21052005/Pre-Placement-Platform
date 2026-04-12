@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
+import toast from "react-hot-toast";
 import SettingsSidebar from "../components/SettingsSidebar";
 import { useNavigate } from "react-router-dom";
 import { updateProfile, changePassword, deleteAccount } from "../services/api";
@@ -7,6 +8,11 @@ import "../styles/settings.css";
 
 function Settings() {
   const navigate = useNavigate();
+
+  // 🔥 separate loading states
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [form, setForm] = useState({
     name: localStorage.getItem("user_name") || "",
@@ -23,46 +29,67 @@ function Settings() {
     });
   };
 
-  // ✅ PROFILE (JWT handles user)
-  const handleSaveProfile = () => {
-    if (!form.name) return alert("Enter name");
+  // ✅ PROFILE
+  const handleSaveProfile = async () => {
+    if (!form.name) return toast.error("Enter name");
 
-    updateProfile({ name: form.name })
-      .then(() => {
-        localStorage.setItem("user_name", form.name);
-        alert("Profile updated");
-      })
-      .catch(() => alert("Update failed"));
+    setProfileLoading(true);
+
+    try {
+      await updateProfile({ name: form.name });
+      localStorage.setItem("user_name", form.name);
+      toast.success("Profile updated");
+    } catch {
+      toast.error("Update failed");
+    }
+
+    setProfileLoading(false);
   };
 
-  // ✅ PASSWORD (JWT handles user)
-  const handleChangePassword = () => {
-    if (!form.password) return alert("Enter current password");
-    if (!form.newPassword) return alert("Enter new password");
+  // ✅ PASSWORD
+  const handleChangePassword = async () => {
+    if (!form.password) return toast.error("Enter current password");
+    if (!form.newPassword) return toast.error("Enter new password");
 
-    changePassword({
-      old_password: form.password,
-      new_password: form.newPassword
-    })
-      .then(() => {
-        alert("Password updated");
-        setForm({ ...form, password: "", newPassword: "" }); // clear fields
-      })
-      .catch(() => alert("Incorrect password"));
+    setPasswordLoading(true);
+
+    try {
+      await changePassword({
+        old_password: form.password,
+        new_password: form.newPassword
+      });
+
+      toast.success("Password updated");
+
+      setForm((prev) => ({
+        ...prev,
+        password: "",
+        newPassword: ""
+      }));
+    } catch {
+      toast.error("Incorrect password");
+    }
+
+    setPasswordLoading(false);
   };
 
-  // ✅ DELETE (JWT handles user)
-  const handleDeleteAccount = () => {
-    const confirmDelete = window.confirm("Are you sure?");
-    if (!confirmDelete) return;
+  // ✅ DELETE
+  const handleDeleteAccount = async () => {
+    if (!window.confirm("Are you sure?")) return;
 
-    deleteAccount()
-      .then(() => {
-        alert("Account deleted");
-        localStorage.clear();
-        navigate("/login");
-      })
-      .catch(() => alert("Delete failed"));
+    setDeleteLoading(true);
+
+    try {
+      await deleteAccount();
+      toast.success("Account deleted");
+
+      localStorage.clear();
+      navigate("/login");
+    } catch {
+      toast.error("Delete failed");
+    }
+
+    setDeleteLoading(false);
   };
 
   return (
@@ -87,7 +114,12 @@ function Settings() {
                   placeholder="Name"
                 />
 
-                <button onClick={handleSaveProfile}>Save</button>
+                <button
+                  onClick={handleSaveProfile}
+                  disabled={profileLoading}
+                >
+                  {profileLoading ? "Saving..." : "Save"}
+                </button>
               </div>
             )}
 
@@ -112,8 +144,11 @@ function Settings() {
                   placeholder="New Password"
                 />
 
-                <button onClick={handleChangePassword}>
-                  Update Password
+                <button
+                  onClick={handleChangePassword}
+                  disabled={passwordLoading}
+                >
+                  {passwordLoading ? "Updating..." : "Update Password"}
                 </button>
               </div>
             )}
@@ -123,8 +158,12 @@ function Settings() {
               <div className="settings-card danger">
                 <h1>Account</h1>
 
-                <button className="delete-btn" onClick={handleDeleteAccount}>
-                  Delete Account
+                <button
+                  className="delete-btn"
+                  onClick={handleDeleteAccount}
+                  disabled={deleteLoading}
+                >
+                  {deleteLoading ? "Deleting..." : "Delete Account"}
                 </button>
               </div>
             )}

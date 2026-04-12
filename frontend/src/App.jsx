@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {Toaster } from "react-hot-toast";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Questions from "./pages/Questions";
@@ -12,6 +13,7 @@ import TopicQuestions from "./pages/TopicQuestions";
 function App() {
   return (
     <BrowserRouter>
+    <Toaster position="top-center"/>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
