@@ -4,6 +4,14 @@ const API = axios.create({
   baseURL: "http://localhost:8000"
 });
 
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export const loginUser = (data) => API.post("/auth/login", data);
 export const registerUser = (data) => API.post("/auth/register", data);
 export const registerAdmin = (data) => API.post("/admin/register", data);
@@ -21,7 +29,5 @@ export const changePassword = (data) =>
     params: data
   });
 
-export const deleteAccount = (email) =>
-  API.delete("/auth/delete-account", {
-    params: { email }
-  });
+export const deleteAccount = () =>
+  API.delete("/auth/delete-account");
