@@ -1,44 +1,63 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
-import toast  from "react-hot-toast";
+import toast from "react-hot-toast";
 import { getQuestionById } from "../services/api";
+// import ConfirmModal from "../components/ConfirmModal";
 import Navbar from "../components/Navbar";
 import Editor from "@monaco-editor/react";
 import axios from "axios";
 import "../styles/questionsDetail.css";
-import { LANGUAGES , TEMPLATES } from "../constants/editorTemplates";
+import { LANGUAGES, TEMPLATES } from "../constants/editorTemplates";
+
+/* 🔥 SIMPLE MODAL COMPONENT */
+function ConfirmModal({ message, onConfirm, onCancel }) {
+  return (
+    <div className="modal-overlay">
+      <div className="modal-box">
+        <p>{message}</p>
+        <div className="modal-actions">
+          <button className="cancel-btn" onClick={onCancel}>Cancel</button>
+          <button className="confirm-btn" onClick={onConfirm}>Confirm</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function QuestionDetail() {
   const { id } = useParams();
+
   const [question, setQuestion] = useState(null);
   const [language, setLanguage] = useState("cpp");
   const [code, setCode] = useState("");
   const [leftWidth, setLeftWidth] = useState(50);
+
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [runLoading, setRunLoading] = useState(false);
+
+  const [modal, setModal] = useState(null); // 🔥 modal state
+
   const isChangingLanguage = useRef(false);
-const [submitLoading, setSubmitLoading] = useState(false);
-const [runLoading, setRunLoading] = useState(false);
 
-
+  // ✅ LOAD QUESTION
   useEffect(() => {
     getQuestionById(id)
       .then((res) => setQuestion(res.data))
-      .catch((err) => console.error(err));
+      .catch(() => toast.error("Failed to load question"));
   }, [id]);
 
-  // ✅ LOAD CODE (FIXED TEMPLATE LOGIC)
+  // ✅ LOAD CODE
   useEffect(() => {
     isChangingLanguage.current = true;
 
     const key = `code_${id}_${language}`;
     const savedCode = localStorage.getItem(key);
 
-    let toLoad;
-    if (savedCode && savedCode.trim() !== "") {
-      toLoad = savedCode;
-    } else {
-      toLoad = TEMPLATES[language] ?? "";
-      localStorage.setItem(key, toLoad); // store template initially
-    }
+    let toLoad = savedCode && savedCode.trim() !== ""
+      ? savedCode
+      : TEMPLATES[language] ?? "";
 
+    localStorage.setItem(key, toLoad);
     setCode(toLoad);
 
     setTimeout(() => {
@@ -46,13 +65,13 @@ const [runLoading, setRunLoading] = useState(false);
     }, 0);
   }, [id, language]);
 
-  // ✅ SAVE CODE (FIXED DEPENDENCIES)
+  // ✅ SAVE CODE
   useEffect(() => {
     if (isChangingLanguage.current) return;
     localStorage.setItem(`code_${id}_${language}`, code);
   }, [code, id, language]);
 
-  // ✅ LANGUAGE CHANGE
+  // 🔥 LANGUAGE CHANGE WITH MODAL
   const handleLanguageChange = (lang) => {
     const savedCode = localStorage.getItem(`code_${id}_${language}`);
     const isModified =
@@ -60,23 +79,33 @@ const [runLoading, setRunLoading] = useState(false);
       savedCode !== (TEMPLATES[language] ?? "");
 
     if (isModified) {
-    const confirmSwitch = window.confirm("Switch language?");
-      if (!confirmSwitch) return;
+      setModal({
+        message: "Switch language? Your code will be saved.",
+        onConfirm: () => {
+          setLanguage(lang);
+          setModal(null);
+        },
+        onCancel: () => setModal(null),
+      });
+    } else {
+      setLanguage(lang);
     }
-
-    setLanguage(lang);
   };
 
+  // 🔥 RESET WITH MODAL
   const handleReset = () => {
-  const confirmReset = window.confirm("Reset code?");
-  if (!confirmReset) return;
-
-  const template = TEMPLATES[language] ?? "";
-  setCode(template);
-  localStorage.setItem(`code_${id}_${language}`, template);
-
-  toast.success("Code reset");
-};
+    setModal({
+      message: "Reset code?",
+      onConfirm: () => {
+        const template = TEMPLATES[language] ?? "";
+        setCode(template);
+        localStorage.setItem(`code_${id}_${language}`, template);
+        toast.success("Code reset");
+        setModal(null);
+      },
+      onCancel: () => setModal(null),
+    });
+  };
 
   // ✅ RESIZE
   const handleDrag = useCallback((e) => {
@@ -93,60 +122,63 @@ const [runLoading, setRunLoading] = useState(false);
     document.addEventListener("mousemove", handleDrag);
     document.addEventListener("mouseup", handleMouseUp);
   }, [handleDrag, handleMouseUp]);
-const handleSubmit = async () => {
-  const userId = localStorage.getItem("user_id");
 
-  if (!userId) {
-    toast.error("Please login first");
-    return;
-  }
+  // ✅ SUBMIT
+  const handleSubmit = async () => {
+    const userId = localStorage.getItem("user_id");
 
-  setSubmitLoading(true);
+    if (!userId) return toast.error("Please login first");
 
-  try {
-    await axios.post("http://localhost:8000/attempts", {
-      user_id: userId,
-      question_id: id,
-      status: "solved",
-    });
+    setSubmitLoading(true);
 
-    toast.success("Submitted successfully");
-  } catch {
-    toast.error("Submission failed");
-  }
+    try {
+      await axios.post("http://localhost:8000/attempts", {
+        user_id: userId,
+        question_id: id,
+        status: "solved",
+      });
 
-  setSubmitLoading(false);
-};
+      toast.success("Submitted successfully");
+    } catch {
+      toast.error("Submission failed");
+    }
 
-const handleRun = async () => {
-  setRunLoading(true);
+    setSubmitLoading(false);
+  };
 
-  try {
-    console.log(code);
-    toast.success("Code executed");
-  } catch {
-    toast.error("Execution failed");
-  }
+  // ✅ RUN
+  const handleRun = async () => {
+    setRunLoading(true);
 
-  setRunLoading(false);
-};
+    try {
+      console.log(code);
+      toast.success("Code executed");
+    } catch {
+      toast.error("Execution failed");
+    }
 
-if (!question) return <p className="loading">Loading question...</p>;
+    setRunLoading(false);
+  };
+
+  if (!question) return <p className="loading">Loading question...</p>;
 
   return (
     <>
       <Navbar />
+
       <div className="detail-container">
 
         {/* LEFT */}
         <div className="question-left" style={{ width: `${leftWidth}%` }}>
           <h2>{question.title}</h2>
+
           <div className="meta">
             <span className={`difficulty ${question.difficulty.toLowerCase()}`}>
               {question.difficulty}
             </span>
             <span className="company">{question.company}</span>
           </div>
+
           <p className="description">{question.description}</p>
         </div>
 
@@ -156,6 +188,7 @@ if (!question) return <p className="loading">Loading question...</p>;
         {/* RIGHT */}
         <div className="editor-right">
           <div className="editor-header">
+
             <select
               className="language-select"
               value={language}
@@ -170,12 +203,21 @@ if (!question) return <p className="loading">Loading question...</p>;
 
             <div className="editor-actions">
               <button onClick={handleReset}>Reset</button>
-             <button className="run-btn" onClick={handleRun} disabled={runLoading}>
-              {runLoading ? "Running..." : "Run"}
+
+              <button
+                className="run-btn"
+                onClick={handleRun}
+                disabled={runLoading}
+              >
+                {runLoading ? "Running..." : "Run"}
               </button>
 
-              <button className="submit-btn" onClick={handleSubmit} disabled={submitLoading}>
-              {submitLoading ? "Submitting..." : "Submit"}
+              <button
+                className="submit-btn"
+                onClick={handleSubmit}
+                disabled={submitLoading}
+              >
+                {submitLoading ? "Submitting..." : "Submit"}
               </button>
             </div>
           </div>
@@ -193,9 +235,8 @@ if (!question) return <p className="loading">Loading question...</p>;
                 scrollBeyondLastLine: false,
                 automaticLayout: true,
                 quickSuggestions: false,
-                 quickSuggestions: false,
-                 suggestOnTriggerCharacters: false,
-                 acceptSuggestionOnEnter: "off",
+                suggestOnTriggerCharacters: false,
+                acceptSuggestionOnEnter: "off",
                 tabCompletion: "off",
                 wordBasedSuggestions: "off",
                 parameterHints: { enabled: false },
@@ -204,6 +245,15 @@ if (!question) return <p className="loading">Loading question...</p>;
           </div>
         </div>
       </div>
+
+      {/* 🔥 MODAL */}
+      {modal && (
+        <ConfirmModal
+          message={modal.message}
+          onConfirm={modal.onConfirm}
+          onCancel={modal.onCancel}
+        />
+      )}
     </>
   );
 }

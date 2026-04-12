@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import toast from "react-hot-toast";
+import ConfirmModal from "../components/ConfirmModal";
 import SettingsSidebar from "../components/SettingsSidebar";
 import { useNavigate } from "react-router-dom";
 import { updateProfile, changePassword, deleteAccount } from "../services/api";
@@ -9,7 +10,7 @@ import "../styles/settings.css";
 function Settings() {
   const navigate = useNavigate();
 
-  // 🔥 separate loading states
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [profileLoading, setProfileLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -73,24 +74,22 @@ function Settings() {
     setPasswordLoading(false);
   };
 
-  // ✅ DELETE
-  const handleDeleteAccount = async () => {
-    if (!window.confirm("Are you sure?")) return;
+const confirmDeleteAccount = async () => {
+  setShowDeleteModal(false);
+  setDeleteLoading(true);
 
-    setDeleteLoading(true);
+  try {
+    await deleteAccount();
+    toast.success("Account deleted");
 
-    try {
-      await deleteAccount();
-      toast.success("Account deleted");
+    localStorage.clear();
+    navigate("/login");
+  } catch {
+    toast.error("Delete failed");
+  }
 
-      localStorage.clear();
-      navigate("/login");
-    } catch {
-      toast.error("Delete failed");
-    }
-
-    setDeleteLoading(false);
-  };
+  setDeleteLoading(false);
+};
 
   return (
     <>
@@ -160,14 +159,36 @@ function Settings() {
 
                 <button
                   className="delete-btn"
-                  onClick={handleDeleteAccount}
+                  onClick={() => setShowDeleteModal(true)}
                   disabled={deleteLoading}
                 >
                   {deleteLoading ? "Deleting..." : "Delete Account"}
                 </button>
               </div>
             )}
+          {showDeleteModal && (
+  <div className="modal-overlay">
+    <div className="modal-box">
+      <p>Are you sure you want to delete your account?</p>
 
+      <div className="modal-actions">
+        <button
+          className="cancel-btn"
+          onClick={() => setShowDeleteModal(false)}
+        >
+          Cancel
+        </button>
+
+        <button
+          className="confirm-btn"
+          onClick={confirmDeleteAccount}
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
           </div>
         </div>
       </div>
