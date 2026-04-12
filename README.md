@@ -2,40 +2,39 @@
 
 ## 📌 Project Overview
 
-The **Pre-Placement Platform** is a centralized web application designed to help students prepare for campus placements efficiently. Instead of switching between multiple websites, students can access **company-specific coding and aptitude questions** in one place.
+The **Pre-Placement Platform** is a full-stack web application designed to centralize placement preparation. Students can practice **company-specific coding questions, track progress, and prepare efficiently — all in one place**.
 
 ---
 
 ## 🎯 Project Vision
 
-* Provide a **single platform** for placement preparation
-* Offer **company-specific question sets**
-* Enable **performance tracking and analytics**
-* (Future) Add **AI-based recommendations and adaptive learning**
+* Single platform for placement preparation
+* Company-wise question practice
+* Track user performance and attempts
+* Admin-controlled question management
+* (Future) AI-driven recommendations
 
 ---
 
 ## 🏗️ Tech Stack
 
-### Backend
+### 🔹 Backend
 
 * FastAPI (Python)
 * JWT Authentication
+* SQLAlchemy ORM
 
-### Frontend (Planned)
+### 🔹 Frontend
 
 * React.js
+* Axios
+* Monaco Editor (Code Editor)
+* React Hot Toast (UI feedback)
 
-### Databases
+### 🔹 Databases
 
-* PostgreSQL → Users, authentication, attempts, analytics
+* PostgreSQL → Users, authentication, attempts
 * MongoDB → Questions (coding + aptitude)
-
-### Future Additions
-
-* Judge0 → Code execution
-* Vector Database → Embeddings & similarity search
-* Basic Language Model
 
 ---
 
@@ -44,133 +43,193 @@ The **Pre-Placement Platform** is a centralized web application designed to help
 ```
 backend/
 │
-├── routes/        # API endpoints
+├── routes/        # API endpoints (auth, admin, questions, users)
 ├── schemas/       # Pydantic models
 ├── models/        # SQLAlchemy models
 ├── CRUD/          # Database operations
 ├── core/          # JWT & security logic
-├── database/      # DB connections (MongoDB + PostgreSQL)
+├── database/      # MongoDB + PostgreSQL connections
 └── main.py        # Entry point
 ```
 
 ---
 
-## ✅ Features Implemented (Backend)
+## 🎨 Frontend Architecture
 
-### 🔐 Authentication
-
-* User Registration API
-* User Login API
-* JWT-based authentication system
-
-### 🗄️ Database Integration
-
-* PostgreSQL connected successfully
-* MongoDB connected successfully
-
-### 📚 Question System
-
-* Questions stored in MongoDB
-* Company-specific dataset (e.g., Amazon)
-* APIs to fetch questions by filters
+```
+frontend/
+│
+├── pages/         # Login, Register, Dashboard, Settings, Admin
+├── components/    # Navbar, Sidebar, Modals
+├── services/      # API calls
+├── styles/        # CSS files
+└── constants/     # Editor templates
+```
 
 ---
 
-## 🔗 Available API Endpoints
+## ✅ Features Implemented
 
-### Authentication
+### 🔐 Authentication
+
+* User & Admin Login/Register
+* JWT-based authentication
+* Role-based access (user/admin)
+
+---
+
+### 👨‍💻 Code Practice System
+
+* Monaco Editor integration
+* Multi-language support
+* Auto-save code per question
+* Language templates
+* Run & Submit functionality
+
+---
+
+### 🧠 Question System
+
+* MongoDB-based question storage
+* Filter by:
+
+  * Company
+  * Topic
+  * Difficulty
+* Question detail page with editor
+
+---
+
+### 📊 Attempts System
+
+* Submission tracking
+* Stores solved questions
+* Linked to user accounts
+
+---
+
+### ⚙️ Admin Panel
+
+* Add questions
+* Delete questions
+* View users
+* Delete users
+* Full admin control over platform content
+
+---
+
+### ⚙️ Settings (User)
+
+* Update profile name (JWT-based)
+* Change password (secure validation)
+* Delete account
+* Toast notifications + modal confirmations
+
+---
+
+### 🎯 UI/UX Improvements
+
+* Toast notifications (no alerts)
+* Custom confirmation modals (no browser popups)
+* Loading states for all actions
+* Clean dashboard & editor UI
+
+---
+
+## 🔗 API Endpoints
+
+### 🔐 Auth
 
 ```
-POST /register
-POST /login
+POST /auth/register
+POST /auth/login
+PUT  /auth/update-profile
+PUT  /auth/change-password
+DELETE /auth/delete-account
 ```
 
-### Questions
+### 📚 Questions
 
 ```
 GET /questions
-GET /questions/{question_id}
+GET /questions/{id}
 GET /questions/company/{company}
 GET /questions/topic/{topic}
 GET /questions/difficulty/{difficulty}
+```
+
+### 👨‍💼 Admin
+
+```
+POST   /admin/login
+POST   /admin/register
+GET    /admin/questions/all
+POST   /admin/questions/add
+DELETE /admin/questions/{id}
+GET    /admin/users/all
+DELETE /admin/users/{id}
+```
+
+### 📊 Attempts
+
+```
+POST /attempts
 ```
 
 ---
 
 ## 🧠 Database Design
 
-### PostgreSQL (Relational)
+### PostgreSQL
 
 Stores:
 
 * Users
-* Authentication data
-* (Future) Attempts & performance tracking
+* Admins
+* Attempts
 
-### MongoDB (NoSQL)
+### MongoDB
 
 Stores:
 
 * Questions
 * Metadata (company, topic, difficulty)
-* Solutions & hints
+* Problem descriptions
 
 ---
 
 ## 📊 Current Project Status
 
-✅ Backend foundation is **fully functional**
-✅ Authentication system implemented
-✅ Question APIs working
-✅ Database connections established
+✅ Full-stack system working
+✅ Authentication (User + Admin)
+✅ Admin dashboard implemented
+✅ Code editor UI completed
+✅ Settings page with JWT security
+✅ Attempts system working
 
-🚧 Frontend development **Working**
-🚧 Submission system **not implemented yet**
-🚧 Performance tracking **pending**
+🚧 Code execution (real compiler) pending
+🚧 Performance analytics pending
 
 ---
 
 ## 🛠️ Upcoming Features
 
-### Backend
+### 🔥 High Priority
 
-* Attempts table (PostgreSQL)
-* Submission API
-* Judge0 integration (code execution)
-* Performance dashboard API
+* Code execution API (Judge0)
+* Test case system
+* Output console
 
-### Frontend (React)
+### 📊 Analytics
 
-* DashBoard Page
-* Companies Page
-* Topics Page
-* TopicQuestions Page
-* Login Page
-* Register Page
-* Question List Page
-* Question Detail Page
-* Code editor UI (later phase)
+* User performance dashboard
+* Attempt history tracking
 
----
+### 🤖 AI Features
 
-## 🧩 Future AI Features
-
-* Question embeddings (vector DB)
-* Similar question recommendations
-* AI-generated question variations
-* Adaptive difficulty system
-
----
-
-## 🧑‍💻 Development Roadmap
-
-1. Backend APIs (Completed ✅)
-2. PostgreSQL integration (Completed ✅)
-3. Authentication system (Completed ✅)
-4. MongoDB question storage (Completed ✅)
-5. Frontend (React) (Working ⚒️)
-6. Submission system (Upcoming ⏭️)
-7. AI integration (Future 🚀)
+* Question recommendations
+* Difficulty adaptation
+* Resume-based preparation
 
 ---
 
@@ -195,77 +254,69 @@ git clone https://github.com/Sarthak21052005/Pre-Placement-Platform
 cd Pre-Placement-Platform
 ```
 
-### 2. Create Virtual Environment
+---
+
+### 2. Backend Setup
 
 ```
 python -m venv venv
-venv\Scripts\activate   # Windows Users
-. venv\bin\activate     # Mac Users 
-```
-
-### 3. Install Dependencies
-
-```
+venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 4. Setup Environment Variables
-
-Create `.env` file:
+Create `.env`:
 
 ```
 DATABASE_URL=postgresql://user:password@localhost/dbname
 MONGO_URL=mongodb://localhost:27017
 SECRET_KEY=your_secret_key
 ```
-## Run these commands inside frontend directory
-```
-npm install
-```
-```
-npm install @monaco-editor/react
-```
 
-### 5. Run Backend Server
-## In backend directory
+Run backend:
+
 ```
 uvicorn main:app --reload
 ```
-## In frontend directory
-```
-npm run dev
-```
-
 
 ---
 
-## 📌 Future Scope
+### 3. Frontend Setup
 
-* Company-wise preparation dashboards
-* Interview experience section
-* Resume-based question recommendations
-* Real-time coding contests
+```
+cd frontend
+npm install
+npm install @monaco-editor/react
+npm install react-hot-toast
+npm run dev
+```
 
 ---
 
 ## 💡 Motivation
 
-This project aims to solve a real problem faced by students:
+> "Students waste time jumping across platforms for preparation."
 
-> "Too many platforms, scattered preparation."
+This platform solves that by combining:
 
-By centralizing everything, we aim to create a **LeetCode + InterviewBit + GFG hybrid platform tailored for college placements**.
+**LeetCode + InterviewBit + GFG → into one focused placement system**
 
 ---
 
 ## 🏁 Conclusion
 
-The backend system is now **ready and scalable**, and the project is entering the **frontend development phase**, followed by advanced features like **submission tracking and AI-based personalization**.
+The platform has evolved into a **complete full-stack system** with:
+
+* Authentication
+* Admin control
+* Code editor
+* User management
+* Clean UI/UX
+
+Next phase focuses on **real code execution and AI-powered learning** 🚀
 
 ---
 
 ## ⭐ Contribute
 
-Feel free to contribute and improve this project!
-
----
+Contributions are welcome!
+Let’s build the ultimate placement platform together 🚀
