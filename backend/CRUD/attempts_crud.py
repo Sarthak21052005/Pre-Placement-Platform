@@ -4,8 +4,6 @@ from database.mongDB import questions_collection
 from bson import ObjectId
 import json
 
-
-# ✅ CREATE
 def create_attempt(db: Session, attempt_data):
     data = attempt_data.dict()
 
@@ -23,17 +21,15 @@ def create_attempt(db: Session, attempt_data):
     return attempt
 
 
-# ✅ GET ALL
 def get_all_attempts(db: Session):
     return db.query(Attempt).all()
 
 
-# ✅ GET USER ATTEMPTS
+
 def get_user_attempts(db: Session, user_id: int):
     return db.query(Attempt).filter(Attempt.user_id == user_id).all()
 
 
-# ✅ GET USER STATS (FINAL PERFECT VERSION)
 def get_user_stats(db: Session, user_id: int):
     attempts = db.query(Attempt).filter(Attempt.user_id == user_id).all()
 
@@ -47,14 +43,13 @@ def get_user_stats(db: Session, user_id: int):
         else:
             existing = question_map[qid]
 
-            # 🔥 PRIORITIZE ACCEPTED
+            
             if existing.verdict != "Accepted" and a.verdict == "Accepted":
                 question_map[qid] = a
 
     solved_attempts = [
         a for a in question_map.values() if a.verdict == "Accepted"
     ]
-
     total = len(solved_attempts)
 
     easy = medium = hard = 0
@@ -71,7 +66,6 @@ def get_user_stats(db: Session, user_id: int):
             medium += 1
         elif difficulty == "hard":
             hard += 1
-
         try:
             question = questions_collection.find_one(
                 {"_id": ObjectId(a.question_id)},
@@ -90,7 +84,6 @@ def get_user_stats(db: Session, user_id: int):
 
         topic_counts[topic] = topic_counts.get(topic, 0) + 1
         company_counts[company] = company_counts.get(company, 0) + 1
-
     return {
         "total": total,
         "easy": easy,

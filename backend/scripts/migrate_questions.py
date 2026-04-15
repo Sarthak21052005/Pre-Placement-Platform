@@ -1,16 +1,3 @@
-"""
-scripts/migrate_questions.py
-
-One-time migration: reads the updated JSON file and upserts all question
-documents into MongoDB, preserving existing _id values.
-
-Usage:
-    python scripts/migrate_questions.py
-
-Environment variables (via .env):
-    MONGO_URI  – MongoDB connection string (default: mongodb://localhost:27017)
-    DB_NAME    – Database name (default: placement_platform)
-"""
 
 import json
 import os
@@ -24,9 +11,8 @@ load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 DB_NAME   = os.getenv("DB_NAME", "placement_platform")
 
-# Path to the enriched questions JSON (relative to project root)
-JSON_PATH = Path(__file__).parent.parent / "PlacementPlatform_questions_updated.json"
 
+JSON_PATH = Path(__file__).parent.parent / "PlacementPlatform_questions_updated.json"
 
 def migrate():
     client = MongoClient(MONGO_URI)
