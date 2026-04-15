@@ -88,7 +88,13 @@ def get_all_questions(admin=Depends(get_current_admin)):
             "topic": q.get("topic"),
             "difficulty": q.get("difficulty"),
             "description": q.get("description"),
-            "tags": q.get("tags")
+            "full_description": q.get("full_description", []),
+            "constraints": q.get("constraints", []),
+            "tags": q.get("tags", []),
+            "function_name": q.get("function_name"),
+            "return_type": q.get("return_type"),
+            "input_format": q.get("input_format", []),
+            "testcases": q.get("testcases", [])
         }
         for q in questions
     ]
@@ -102,6 +108,28 @@ def add_question(question: dict, admin=Depends(get_current_admin)):
         "message": "Question added",
         "id": str(result.inserted_id)
     }
+
+
+@router.put("/questions/{question_id}")
+def update_question(question_id: str, question: dict, admin=Depends(get_current_admin)):
+    try:
+        obj_id = ObjectId(question_id)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid question id")
+
+    # Remove _id from update payload if present (can't update _id)
+    question.pop("_id", None)
+    question.pop("id", None)
+
+    result = questions_collection.update_one(
+        {"_id": obj_id},
+        {"$set": question}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Question not found")
+
+    return {"message": "Question updated"}
 
 
 @router.delete("/questions/{question_id}")
