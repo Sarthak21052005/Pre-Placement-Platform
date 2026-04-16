@@ -7,6 +7,6 @@ client = MongoClient(MONGO_URI)
 db = client["PlacementPlatform"]
 
 questions_collection = db["questions"]
-users_collection = db["users"]
+companies_collection = db["companies"]
 topics_collection = db["topics"]
  

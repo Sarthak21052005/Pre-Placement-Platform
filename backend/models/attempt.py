@@ -9,4 +9,5 @@ class Attempt(Base):
     user_id = Column(Integer, nullable=False)
     question_id = Column(String, nullable=False) 
     status = Column(String, default="attempted")
+    difficulty = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)

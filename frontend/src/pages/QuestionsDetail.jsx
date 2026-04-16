@@ -136,6 +136,7 @@ function QuestionDetail() {
         user_id: userId,
         question_id: id,
         status: "solved",
+        difficulty: question.difficulty,
       });
 
       toast.success("Submitted successfully");
@@ -245,8 +246,6 @@ function QuestionDetail() {
           </div>
         </div>
       </div>
-
-      {/* 🔥 MODAL */}
       {modal && (
         <ConfirmModal
           message={modal.message}
