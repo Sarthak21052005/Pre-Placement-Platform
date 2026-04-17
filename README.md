@@ -2,16 +2,16 @@
 
 ## 📌 Project Overview
 
-The **Pre-Placement Platform** is a full-stack web application designed to centralize placement preparation. Students can practice **company-specific coding questions, track progress, and prepare efficiently — all in one place**.
+The **Pre-Placement Platform** is a full-stack web application designed to centralize placement preparation. Students can practice **company-specific coding questions, track performance, and visualize progress — all in one place**.
 
 ---
 
 ## 🎯 Project Vision
 
 * Single platform for placement preparation
-* Company-wise question practice
-* Track user performance and attempts
-* Admin-controlled question management
+* Company-wise + Topic-wise practice
+* Track user performance with analytics
+* Eliminate duplicate effort (LeetCode-style tracking)
 * (Future) AI-driven recommendations
 
 ---
@@ -21,15 +21,16 @@ The **Pre-Placement Platform** is a full-stack web application designed to centr
 ### 🔹 Backend
 
 * FastAPI (Python)
-* JWT Authentication
 * SQLAlchemy ORM
+* JWT Authentication
 
 ### 🔹 Frontend
 
 * React.js
 * Axios
-* Monaco Editor (Code Editor)
-* React Hot Toast (UI feedback)
+* Monaco Editor
+* Recharts (Charts)
+* React Calendar Heatmap
 
 ### 🔹 Databases
 
@@ -43,13 +44,13 @@ The **Pre-Placement Platform** is a full-stack web application designed to centr
 ```
 backend/
 │
-├── routes/        # API endpoints (auth, admin, questions, users)
+├── routes/        # API endpoints
 ├── schemas/       # Pydantic models
 ├── models/        # SQLAlchemy models
-├── CRUD/          # Database operations
-├── core/          # JWT & security logic
-├── database/      # MongoDB + PostgreSQL connections
-└── main.py        # Entry point
+├── CRUD/          # DB logic
+├── core/          # Auth & security
+├── database/      # Mongo + PostgreSQL
+└── main.py
 ```
 
 ---
@@ -59,10 +60,10 @@ backend/
 ```
 frontend/
 │
-├── pages/         # Login, Register, Dashboard, Settings, Admin
-├── components/    # Navbar, Sidebar, Modals
+├── pages/         # Dashboard, Profile, Settings
+├── components/    # Navbar, Cards, Charts
 ├── services/      # API calls
-├── styles/        # CSS files
+├── styles/        # CSS
 └── constants/     # Editor templates
 ```
 
@@ -72,9 +73,9 @@ frontend/
 
 ### 🔐 Authentication
 
-* User & Admin Login/Register
+* User & Admin login/register
 * JWT-based authentication
-* Role-based access (user/admin)
+* Role-based access
 
 ---
 
@@ -82,9 +83,8 @@ frontend/
 
 * Monaco Editor integration
 * Multi-language support
-* Auto-save code per question
+* Run & Submit system
 * Language templates
-* Run & Submit functionality
 
 ---
 
@@ -96,43 +96,68 @@ frontend/
   * Company
   * Topic
   * Difficulty
-* Question detail page with editor
 
 ---
 
-### 📊 Attempts System
+### 📊 Attempts System (🔥 Improved)
 
-* Submission tracking
-* Stores solved questions
-* Linked to user accounts
+* Tracks solved questions
+* **Prevents duplicate counting (LeetCode behavior)**
+* Stores:
+
+  * user_id
+  * question_id
+  * difficulty
+  * timestamp
+
+---
+
+### 📈 Dashboard Analytics (🔥 NEW)
+
+* Problems solved count
+* Difficulty split (Easy/Medium/Hard)
+* Topic-wise progress
+* Company-wise progress
+* Interactive charts (Pie + Bar)
+
+---
+
+### 📅 Profile Activity Heatmap (🔥 NEW)
+
+* GitHub-style submission graph
+* Daily activity tracking
+* Tooltip support
+* Stats:
+
+  * Total submissions
+  * Active days
+  * 🔥 Streak counter
 
 ---
 
 ### ⚙️ Admin Panel
 
-* Add questions
-* Delete questions
-* View users
-* Delete users
-* Full admin control over platform content
+* Add/Delete questions
+* Manage users
+* Full control over platform
 
 ---
 
 ### ⚙️ Settings (User)
 
-* Update profile name (JWT-based)
-* Change password (secure validation)
+* Update profile
+* Change password
 * Delete account
-* Toast notifications + modal confirmations
+* Toast notifications + modals
 
 ---
 
 ### 🎯 UI/UX Improvements
 
-* Toast notifications (no alerts)
-* Custom confirmation modals (no browser popups)
-* Loading states for all actions
-* Clean dashboard & editor UI
+* Modern dashboard UI
+* Smooth animations
+* Responsive design
+* Clean card-based layout
 
 ---
 
@@ -158,6 +183,14 @@ GET /questions/topic/{topic}
 GET /questions/difficulty/{difficulty}
 ```
 
+### 📊 Attempts
+
+```
+POST /attempts
+GET  /attempts/stats/{user_id}
+GET  /attempts/heatmap/{user_id}
+```
+
 ### 👨‍💼 Admin
 
 ```
@@ -170,19 +203,11 @@ GET    /admin/users/all
 DELETE /admin/users/{id}
 ```
 
-### 📊 Attempts
-
-```
-POST /attempts
-```
-
 ---
 
 ## 🧠 Database Design
 
 ### PostgreSQL
-
-Stores:
 
 * Users
 * Admins
@@ -190,46 +215,42 @@ Stores:
 
 ### MongoDB
 
-Stores:
-
 * Questions
-* Metadata (company, topic, difficulty)
-* Problem descriptions
+* Topic & company metadata
 
 ---
 
 ## 📊 Current Project Status
 
-✅ Full-stack system working
-✅ Authentication (User + Admin)
-✅ Admin dashboard implemented
-✅ Code editor UI completed
-✅ Settings page with JWT security
-✅ Attempts system working
+✅ Full-stack platform working
+✅ Dashboard with analytics
+✅ Heatmap activity tracking
+✅ Unique attempt tracking (no duplicates)
+✅ Admin system
+✅ Clean UI/UX
 
-🚧 Code execution (real compiler) pending
-🚧 Performance analytics pending
+🚧 Code execution engine pending
+🚧 AI recommendations pending
 
 ---
 
 ## 🛠️ Upcoming Features
 
-### 🔥 High Priority
+### 🔥 Core
 
-* Code execution API (Judge0)
-* Test case system
+* Code execution (Judge0)
+* Test cases system
 * Output console
 
-### 📊 Analytics
+### 📊 Advanced Analytics
 
-* User performance dashboard
-* Attempt history tracking
+* Weak topic detection
+* Performance trends
 
 ### 🤖 AI Features
 
-* Question recommendations
-* Difficulty adaptation
-* Resume-based preparation
+* Smart recommendations
+* Personalized learning path
 
 ---
 
@@ -260,7 +281,13 @@ cd Pre-Placement-Platform
 
 ```
 python -m venv venv
+
+🪟 Windows
 venv\Scripts\activate
+
+🍎 Mac / 🐧 Linux
+
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -272,7 +299,7 @@ MONGO_URL=mongodb://localhost:27017
 SECRET_KEY=your_secret_key
 ```
 
-Run backend:
+Run:
 
 ```
 uvicorn main:app --reload
@@ -285,8 +312,6 @@ uvicorn main:app --reload
 ```
 cd frontend
 npm install
-npm install @monaco-editor/react
-npm install react-hot-toast
 npm run dev
 ```
 
@@ -294,29 +319,27 @@ npm run dev
 
 ## 💡 Motivation
 
-> "Students waste time jumping across platforms for preparation."
+> "Students waste time switching between platforms."
 
-This platform solves that by combining:
+This platform combines:
 
-**LeetCode + InterviewBit + GFG → into one focused placement system**
+**LeetCode + GFG + InterviewBit → into ONE system**
 
 ---
 
 ## 🏁 Conclusion
 
-The platform has evolved into a **complete full-stack system** with:
+The platform has evolved into a **data-driven preparation system** with:
 
-* Authentication
-* Admin control
-* Code editor
-* User management
-* Clean UI/UX
+* Real-time analytics
+* Activity tracking
+* Structured practice
 
-Next phase focuses on **real code execution and AI-powered learning** 🚀
+Next phase focuses on **AI-powered learning 🚀**
 
 ---
 
 ## ⭐ Contribute
 
 Contributions are welcome!
-Let’s build the ultimate placement platform together 🚀
+Let’s build the ultimate placement platform 🚀
