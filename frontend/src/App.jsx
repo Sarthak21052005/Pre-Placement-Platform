@@ -9,6 +9,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import DashBoard from "./pages/DashBoard";
 import Settings  from "./pages/Settings";
 import Topics from "./pages/Topics";
+import Profile from "./pages/Profile";
 import TopicQuestions from "./pages/TopicQuestions";
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/admin/register" element={<Register />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/Companies" element={<Companies/>} />
         <Route path="/dashboard" element={<DashBoard/>} />
         <Route path="/topics" element = {<Topics/>}/> 
