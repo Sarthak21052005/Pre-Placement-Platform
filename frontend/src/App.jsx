@@ -9,6 +9,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import DashBoard from "./pages/DashBoard";
 import Settings  from "./pages/Settings";
 import Topics from "./pages/Topics";
+import MyAttempts from "./pages/myattempts"
 import Profile from "./pages/Profile";
 import TopicQuestions from "./pages/TopicQuestions";
 function App() {
@@ -24,6 +25,7 @@ function App() {
         <Route path="/Companies" element={<Companies/>} />
         <Route path="/dashboard" element={<DashBoard/>} />
         <Route path="/topics" element = {<Topics/>}/> 
+        <Route path="/attempts" element={<MyAttempts />} />
         <Route path="/topics/:topic" element ={<TopicQuestions/>}/>
         <Route path="/questions/company/:company" element={<Questions />} />
         <Route path="/questions/:id" element={<QuestionDetail />} />
