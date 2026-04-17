@@ -22,6 +22,11 @@
   transition: box-shadow 0.3s ease;
 }
 
+.heatmap-card h3
+{
+    color: #ffffff;
+    font-size: 1.7rem;
+}
 .heatmap-card:hover {
   box-shadow:
     0 0 0 1px rgba(99, 179, 104, 0.14),
@@ -180,6 +185,31 @@
   width: 11px;
   height: 11px;
   border-radius: 2px;
+}
+.stat-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.heatmap-stats
+{
+    display: flex;
+    gap: 16px;
+    margin-top: 20px;
+}
+.heatmap-stats b
+{
+    color: #ffffff;
+    font-weight: 600;
+    gap: 15px;
+    
+}
+.heatmap-stats p {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #ffffff;
 }
 
 .legend-cell.color-empty  { background: #1a1e28; }
