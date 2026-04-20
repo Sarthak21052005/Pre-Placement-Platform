@@ -139,8 +139,10 @@ function QuestionDetail() {
       await axios.post("http://localhost:8000/attempts", {
         user_id: userId,
         question_id: id,
-        status: "solved",
+        question_name : question.title,
+        company_names : question.company,
         difficulty: question.difficulty,
+        status: "solved",
       });
 
       toast.success("Submitted successfully");

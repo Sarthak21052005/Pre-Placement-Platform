@@ -11,8 +11,8 @@ function Register() {
     password: ""
   });
 
+    const [role, setRole] = useState("user");
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -58,12 +58,23 @@ function Register() {
     <div className="page-center">
       <div className="auth-card">
 
-        <div className="role-switch">
-          <button className={!isAdmin ? "active" : ""}>User</button>
-          <button className={isAdmin ? "active" : ""}>Admin</button>
+       <div className="role-switch">
+          <button
+            className={role === "user" ? "active" : ""}
+            onClick={() => setRole("user")}
+          >
+            User
+          </button>
+
+          <button
+            className={role === "admin" ? "active" : ""}
+            onClick={() => setRole("admin")}
+          >
+            Admin
+          </button>
         </div>
 
-        <h1>{isAdmin ? "Admin Register" : "User Register"}</h1>
+       <h1>{role === "admin" ? " For Admin" : " For  User"}</h1>
 
         <form onSubmit={handleSubmit}>
           <input

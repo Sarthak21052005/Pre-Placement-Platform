@@ -71,11 +71,13 @@ function MyAttempts() {
 
                 <h3 className="card-title">{a.title || "Untitled"}</h3>
 
-                <div className="card-footer">
-                  <span className="company-badge">
-                    {a.company || "Unknown"}
-                  </span>
-                </div>
+               <div className="card-footer">
+                {a.companies?.map((c, idx) => (
+                <span key={idx} className="company-badge">
+                {c}
+            </span>
+              ))} 
+            </div>
               </div>
             );
           })}
