@@ -1,38 +1,41 @@
 from database.mongDB import questions_collection
 from bson import ObjectId
+
+
+def serialize(question):
+    question["_id"] = str(question["_id"])
+    return question
+
+
+def fetch(query={}):
+    return [serialize(q) for q in questions_collection.find(query)]
+
+
 def get_all_questions():
-    questions = []
-    for question in questions_collection.find():
-        question['_id'] = str(question['_id'])
-        questions.append(question)
-    return questions
+    return fetch()
+
 
 def get_questions_by_topic(topic: str):
-    questions = []
-    for question in questions_collection.find({
-        "topic": {"$regex": topic, "$options": "i"}   # 🔥 FIX
-    }):
-        question['_id'] = str(question['_id'])
-        questions.append(question)
-    return questions
+    return fetch({
+        "topic": {"$regex": topic, "$options": "i"}
+    })
 
 
 def get_questions_by_company(company: str):
-    questions = []
-    for question in questions_collection.find({"company": company}):
-        question['_id'] = str(question['_id'])
-        questions.append(question)
-    return questions  
+    return fetch({
+        "company": {"$regex": f"^{company}$", "$options": "i"}
+    })
 
-def get_questions_by_id(question_id: str):
-    question = questions_collection.find_one({"_id": ObjectId(question_id)})
-    if question:
-        question['_id'] = str(question['_id'])
-    return question 
 
 def get_questions_by_difficulty(difficulty: str):
-    questions = []
-    for question in questions_collection.find({"difficulty": difficulty}):
-        question['_id'] = str(question['_id'])
-        questions.append(question)
-    return questions
+    return fetch({
+        "difficulty": {"$regex": f"^{difficulty}$", "$options": "i"}
+    })
+
+
+def get_questions_by_id(question_id: str):
+    try:
+        q = questions_collection.find_one({"_id": ObjectId(question_id)})
+        return serialize(q) if q else None
+    except:
+        return None

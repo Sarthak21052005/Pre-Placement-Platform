@@ -27,3 +27,7 @@ def read_question_by_id(question_id: str):
 def read_questions_by_difficulty(difficulty: str):
     questions = questions_crud.get_questions_by_difficulty(difficulty)
     return questions if questions else {"message": "No questions found for the specified difficulty."}
+
+@router.get("/questions/filter")
+def filter_questions(company: str = None, topic: str = None, difficulty: str = None):
+    return questions_crud.get_filtered_questions(company, topic, difficulty)

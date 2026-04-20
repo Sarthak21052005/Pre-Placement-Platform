@@ -94,6 +94,7 @@
 .stat-number {
   font-size: 64px;
   font-weight: 800;
+  color: black;
   background: linear-gradient(135deg, #000 40%, #6366f1);
   background-clip: text;
   -webkit-background-clip: text;
@@ -207,4 +208,16 @@
     grid-column: auto;
     grid-template-columns: 1fr;
   }
+}
+
+.stat-value.easy {
+  color: #34d399;
+}
+
+.stat-value.medium {
+  color: #fbbf24;
+}
+
+.stat-value.hard {
+  color: #f87171;
 }

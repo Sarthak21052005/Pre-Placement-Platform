@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { getQuestionById } from "../services/api";
-// import ConfirmModal from "../components/ConfirmModal";
 import Navbar from "../components/Navbar";
 import Editor from "@monaco-editor/react";
 import axios from "axios";
@@ -35,8 +34,14 @@ function QuestionDetail() {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [runLoading, setRunLoading] = useState(false);
 
-  const [modal, setModal] = useState(null); // 🔥 modal state
+  // ✅ FIX: missing output state
+  const [output, setOutput] = useState("");
 
+  // 🔥 TEST CASES
+  const [activeCase, setActiveCase] = useState(0);
+  const [testCases, setTestCases] = useState([{ input: "" }]);
+
+  const [modal, setModal] = useState(null);
   const isChangingLanguage = useRef(false);
 
   // ✅ LOAD QUESTION
@@ -53,9 +58,10 @@ function QuestionDetail() {
     const key = `code_${id}_${language}`;
     const savedCode = localStorage.getItem(key);
 
-    let toLoad = savedCode && savedCode.trim() !== ""
-      ? savedCode
-      : TEMPLATES[language] ?? "";
+    const toLoad =
+      savedCode && savedCode.trim() !== ""
+        ? savedCode
+        : TEMPLATES[language] ?? "";
 
     localStorage.setItem(key, toLoad);
     setCode(toLoad);
@@ -71,12 +77,11 @@ function QuestionDetail() {
     localStorage.setItem(`code_${id}_${language}`, code);
   }, [code, id, language]);
 
-  // 🔥 LANGUAGE CHANGE WITH MODAL
+  // 🔥 LANGUAGE CHANGE
   const handleLanguageChange = (lang) => {
     const savedCode = localStorage.getItem(`code_${id}_${language}`);
     const isModified =
-      savedCode !== null &&
-      savedCode !== (TEMPLATES[language] ?? "");
+      savedCode !== null && savedCode !== (TEMPLATES[language] ?? "");
 
     if (isModified) {
       setModal({
@@ -92,7 +97,7 @@ function QuestionDetail() {
     }
   };
 
-  // 🔥 RESET WITH MODAL
+  // 🔥 RESET
   const handleReset = () => {
     setModal({
       message: "Reset code?",
@@ -126,7 +131,6 @@ function QuestionDetail() {
   // ✅ SUBMIT
   const handleSubmit = async () => {
     const userId = localStorage.getItem("user_id");
-
     if (!userId) return toast.error("Please login first");
 
     setSubmitLoading(true);
@@ -147,14 +151,20 @@ function QuestionDetail() {
     setSubmitLoading(false);
   };
 
-  // ✅ RUN
+  // 🔥 RUN
   const handleRun = async () => {
     setRunLoading(true);
 
     try {
-      console.log(code);
-      toast.success("Code executed");
+      const res = await axios.post("http://localhost:8000/run", {
+        code,
+        language,
+        input: testCases[activeCase]?.input || "",
+      });
+
+      setOutput(res.data.output);
     } catch {
+      setOutput("Error running code");
       toast.error("Execution failed");
     }
 
@@ -180,7 +190,48 @@ function QuestionDetail() {
             <span className="company">{question.company}</span>
           </div>
 
-          <p className="description">{question.description}</p>
+         {/* DESCRIPTION */}
+<p className="description">{question.description}</p>
+
+{/* FULL DESCRIPTION */}
+{question.full_description?.length > 0 && (
+  <div className="section">
+    <h3>Details</h3>
+    <ul>
+      {question.full_description.map((point, index) => (
+        <li key={index}>{point}</li>
+      ))}
+    </ul>
+  </div>
+)}
+
+{/* EXAMPLES */}
+{question.examples?.length > 0 && (
+  <div className="section">
+    <h3>Examples</h3>
+    {question.examples.map((ex, index) => (
+      <div key={index} className="example-box">
+        <p><strong>Input:</strong> {ex.input}</p>
+        <p><strong>Output:</strong> {ex.output}</p>
+        {ex.explanation && (
+          <p><strong>Explanation:</strong> {ex.explanation}</p>
+        )}
+      </div>
+    ))}
+  </div>
+)}
+
+{/* CONSTRAINTS */}
+{question.constraints?.length > 0 && (
+  <div className="section">
+    <h3>Constraints</h3>
+    <ul>
+      {question.constraints.map((c, i) => (
+        <li key={i}>{c}</li>
+      ))}
+    </ul>
+  </div>
+)}
         </div>
 
         {/* RESIZER */}
@@ -188,8 +239,9 @@ function QuestionDetail() {
 
         {/* RIGHT */}
         <div className="editor-right">
-          <div className="editor-header">
 
+          {/* HEADER */}
+          <div className="editor-header">
             <select
               className="language-select"
               value={language}
@@ -223,7 +275,8 @@ function QuestionDetail() {
             </div>
           </div>
 
-          <div style={{ flex: 1 }}>
+          {/* EDITOR */}
+          <div style={{ height: "60%" }}>
             <Editor
               height="100%"
               language={language}
@@ -233,19 +286,71 @@ function QuestionDetail() {
               options={{
                 fontSize: 14,
                 minimap: { enabled: false },
-                scrollBeyondLastLine: false,
                 automaticLayout: true,
-                quickSuggestions: false,
-                suggestOnTriggerCharacters: false,
-                acceptSuggestionOnEnter: "off",
-                tabCompletion: "off",
-                wordBasedSuggestions: "off",
-                parameterHints: { enabled: false },
               }}
             />
           </div>
+
+          {/* TESTCASE PANEL */}
+          <div className="testcase-panel">
+
+            <div className="testcase-tabs">
+              {testCases.map((_, index) => (
+                <div
+                  key={index}
+                  className={`tab ${activeCase === index ? "active" : ""}`}
+                  onClick={() => setActiveCase(index)}
+                >
+                  Case {index + 1}
+
+                  {testCases.length > 1 && (
+                    <span
+                      className="close"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const updated = testCases.filter((_, i) => i !== index);
+                        setTestCases(updated);
+                        setActiveCase(0);
+                      }}
+                    >
+                      ×
+                    </span>
+                  )}
+                </div>
+              ))}
+
+              <button
+                className="add-case"
+                onClick={() => {
+                  setTestCases([...testCases, { input: "" }]);
+                  setActiveCase(testCases.length);
+                }}
+              >
+                +
+              </button>
+            </div>
+
+            {/* INPUT */}
+            <textarea
+              value={testCases[activeCase]?.input || ""}
+              onChange={(e) => {
+                const updated = [...testCases];
+                updated[activeCase].input = e.target.value;
+                setTestCases(updated);
+              }}
+              placeholder="Enter input..."
+            />
+
+            {/* OUTPUT */}
+            <div className="output-box">
+              <h4>Output</h4>
+              <pre>{output || "Run code to see output..."}</pre>
+            </div>
+
+          </div>
         </div>
       </div>
+
       {modal && (
         <ConfirmModal
           message={modal.message}
