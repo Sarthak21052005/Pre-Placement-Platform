@@ -187,7 +187,9 @@ function QuestionDetail() {
             <span className={`difficulty ${question.difficulty.toLowerCase()}`}>
               {question.difficulty}
             </span>
-            <span className="company">{question.company}</span>
+            {question.company?.map((c, i) => (
+  <span key={i} className="company">{c}</span>
+))}
           </div>
 
          {/* DESCRIPTION */}
