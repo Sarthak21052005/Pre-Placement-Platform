@@ -94,7 +94,7 @@ function Login() {
             Admin
           </button>
         </div>
-
+    
         <form onSubmit={handleSubmit}>
           <input
             type="email"
