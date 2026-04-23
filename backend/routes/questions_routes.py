@@ -2,6 +2,8 @@ from fastapi import APIRouter
 from CRUD import questions_crud
 from bson import ObjectId
 from database.mongDB import questions_collection
+import random
+
 router = APIRouter()
 
 @router.get("/questions")
@@ -19,6 +21,14 @@ def read_questions_by_company(company: str):
     questions = questions_crud.get_questions_by_company(company)
     return questions if questions else {"message": "No questions found for the specified company."}
 
+@router.get("/questions/random")
+def get_random_question():
+    all_ids = questions_collection.distinct("_id")
+    if not all_ids:
+        return {"error": "No questions found"}
+    picked_id = random.choice(all_ids)
+    return {"id": str(picked_id)}
+
 @router.get("/questions/{id}")
 def get_question(id: str):
     try:
@@ -27,10 +37,9 @@ def get_question(id: str):
         if not question:
             return {"error": "Question not found"}
 
-        # convert ObjectId → string
         question["_id"] = str(question["_id"])
 
-        # 🔥 FILTER ONLY VISIBLE TESTCASES
+        # filter only visible testcases
         question["testcases"] = [
             tc for tc in question.get("testcases", [])
             if not tc.get("hidden", False)

@@ -1,6 +1,7 @@
 import "../styles/navbar.css";
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
+import axios from "axios";
 
 function Navbar({ search, setSearch }) {
   const navigate = useNavigate();
@@ -8,14 +9,26 @@ function Navbar({ search, setSearch }) {
 
   const dropdownRef = useRef();
 
-const user = localStorage.getItem("user_name") || "User";
+  const user = localStorage.getItem("user_name") || "User";
 
   const logout = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user_id");
-  localStorage.removeItem("user_name"); 
-  navigate("/login");
-};
+    localStorage.removeItem("token");
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("user_name");
+    navigate("/login");
+  };
+
+  const handlePractice = async () => {
+    try {
+      const res = await axios.get("http://localhost:8000/questions/random");
+      if (res.data.id) {
+        navigate(`/questions/${res.data.id}`);
+      }
+    } catch {
+      // fallback: just go to practice page if the call fails
+      navigate("/practice");
+    }
+  };
 
   const isSearchEnabled = search !== undefined && setSearch !== undefined;
 
@@ -25,17 +38,13 @@ const user = localStorage.getItem("user_name") || "User";
         setOpen(false);
       }
     }
-
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
     <div className="navbar">
-      
+
       <div className="nav-left">
         <div className="logo" onClick={() => navigate("/dashboard")}>
           <img src="/logos/codestride_logo.png" alt="CodeStride" className="logo-img" />
@@ -44,14 +53,13 @@ const user = localStorage.getItem("user_name") || "User";
         <div className="nav-links">
           <p onClick={() => navigate("/companies")}>Companies</p>
           <p onClick={() => navigate("/topics")}>Topics</p>
-          <p onClick={() => navigate("/practice")}>Practice</p>
+          <p onClick={handlePractice}>Practice</p>
           <p onClick={() => navigate("/LeaderBoard")}>Leaderboard</p>
         </div>
       </div>
 
       <div className="nav-right">
 
-        {/* ✅ SAFE SEARCH */}
         {isSearchEnabled && (
           <input
             type="text"
@@ -73,23 +81,13 @@ const user = localStorage.getItem("user_name") || "User";
                 <h1>{user}</h1>
               </div>
 
-              <p onClick={() => { setOpen(false); navigate("/profile"); }}>
-                Profile
-              </p>
-
-              <p onClick={() => { setOpen(false); navigate("/attempts"); }}>
-                My Attempts
-              </p>
-
-              <p onClick={() => { setOpen(false); navigate("/settings"); }}>
-                Settings
-              </p>
+              <p onClick={() => { setOpen(false); navigate("/profile"); }}>Profile</p>
+              <p onClick={() => { setOpen(false); navigate("/attempts"); }}>My Attempts</p>
+              <p onClick={() => { setOpen(false); navigate("/settings"); }}>Settings</p>
 
               <hr />
 
-              <p className="logout" onClick={logout}>
-                Logout
-              </p>
+              <p className="logout" onClick={logout}>Logout</p>
             </div>
           )}
         </div>
