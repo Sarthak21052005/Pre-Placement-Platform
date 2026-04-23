@@ -2,11 +2,13 @@ from sqlalchemy.orm import Session
 from models.attempt import Attempt
 from database.mongDB import questions_collection
 from bson import ObjectId
-
+import json
 
 # ✅ CREATE
 def create_attempt(db: Session, attempt_data):
-    attempt = Attempt(**attempt_data.dict())
+    data = attempt_data.dict()
+    data["company_names"] = json.dumps(data["company_names"])
+    attempt = Attempt(**data)
     db.add(attempt)
     db.commit()
     db.refresh(attempt)

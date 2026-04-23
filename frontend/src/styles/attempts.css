@@ -45,7 +45,8 @@
   color: #111;
   line-height: 1;
 }
-.attempts-count span {
+
+.attempts-count  span  {
   font-family: 'DM Sans', sans-serif;
   font-size: 13px;
   font-weight: 400;
@@ -54,7 +55,10 @@
   text-align: right;
   letter-spacing: 0.05em;
 }
-
+.company-badge
+{
+  margin-inline-end: 10px;
+}
 /* ── Grid ── */
 .attempts-grid {
   display: grid;

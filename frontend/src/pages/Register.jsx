@@ -11,8 +11,8 @@ function Register() {
     password: ""
   });
 
+    const [role, setRole] = useState("user");
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -56,34 +56,49 @@ function Register() {
 
   return (
     <div className="page-center">
+
       <div className="auth-card">
 
-        <div className="role-switch">
-          <button className={!isAdmin ? "active" : ""}>User</button>
-          <button className={isAdmin ? "active" : ""}>Admin</button>
+        {/* ── CodeStride Brand Logo ── */}
+        <div className="brand-logo">
+          <img src="/logos/codestride_logo.png" alt="CodeStride" className="brand-logo-img" />
         </div>
 
-        <h1>{isAdmin ? "Admin Register" : "User Register"}</h1>
+       <div className="role-switch">
+          <button
+            className={role === "user" ? "active" : ""}
+            onClick={() => setRole("user")}
+          >
+            User
+          </button>
+
+          <button
+            className={role === "admin" ? "active" : ""}
+            onClick={() => setRole("admin")}
+          >
+            Admin
+          </button>
+        </div>
 
         <form onSubmit={handleSubmit}>
           <input
             type="text"
             name="name"
-            placeholder="Full Name"
+            placeholder="Enter your Full Name"
             onChange={handleChange}
           />
 
           <input
             type="email"
             name="email"
-            placeholder="Email"
+            placeholder="Enter the valid Email Address"
             onChange={handleChange}
           />
 
           <input
             type="password"
             name="password"
-            placeholder="Password"
+            placeholder="Enter the Password"
             onChange={handleChange}
           />
 

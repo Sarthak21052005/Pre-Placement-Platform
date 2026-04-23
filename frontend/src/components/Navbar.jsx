@@ -37,16 +37,15 @@ const user = localStorage.getItem("user_name") || "User";
     <div className="navbar">
       
       <div className="nav-left">
-        <h1 className="logo" onClick={() => navigate("/dashboard")}>
-          HirePath
-        </h1>
+        <div className="logo" onClick={() => navigate("/dashboard")}>
+          <img src="/logos/codestride_logo.png" alt="CodeStride" className="logo-img" />
+        </div>
 
         <div className="nav-links">
           <p onClick={() => navigate("/companies")}>Companies</p>
           <p onClick={() => navigate("/topics")}>Topics</p>
           <p onClick={() => navigate("/practice")}>Practice</p>
-          <p onClick={() => navigate("/Leaderboard")}>Leaderboard</p>
-
+          <p onClick={() => navigate("/LeaderBoard")}>Leaderboard</p>
         </div>
       </div>
 
@@ -80,10 +79,6 @@ const user = localStorage.getItem("user_name") || "User";
 
               <p onClick={() => { setOpen(false); navigate("/attempts"); }}>
                 My Attempts
-              </p>
-
-              <p onClick={() => { setOpen(false); navigate("/targets"); }}>
-                Target Companies
               </p>
 
               <p onClick={() => { setOpen(false); navigate("/settings"); }}>

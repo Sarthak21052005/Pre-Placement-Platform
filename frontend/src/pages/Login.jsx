@@ -71,7 +71,13 @@ function Login() {
 
   return (
     <div className="page-center">
+
       <div className="auth-card">
+
+        {/* ── CodeStride Brand Logo ── */}
+        <div className="brand-logo">
+          <img src="/logos/codestride_logo.png" alt="CodeStride" className="brand-logo-img" />
+        </div>
 
         <div className="role-switch">
           <button
@@ -88,21 +94,19 @@ function Login() {
             Admin
           </button>
         </div>
-
-        <h1>{role === "admin" ? "Admin Login" : "User Login"}</h1>
-
+    
         <form onSubmit={handleSubmit}>
           <input
             type="email"
             name="email"
-            placeholder="Email"
+            placeholder="Enter your email address"
             onChange={handleChange}
           />
 
           <input
             type="password"
             name="password"
-            placeholder="Password"
+            placeholder="Enter your Password"
             onChange={handleChange}
           />
 

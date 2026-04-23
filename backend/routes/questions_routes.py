@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from CRUD import questions_crud
-
+from bson import ObjectId
+from database.mongDB import questions_collection
 router = APIRouter()
 
 @router.get("/questions")
@@ -18,10 +19,28 @@ def read_questions_by_company(company: str):
     questions = questions_crud.get_questions_by_company(company)
     return questions if questions else {"message": "No questions found for the specified company."}
 
-@router.get("/questions/{question_id}")
-def read_question_by_id(question_id: str):
-    question = questions_crud.get_questions_by_id(question_id)
-    return question if question else {"message": "Question not found."}
+@router.get("/questions/{id}")
+def get_question(id: str):
+    try:
+        question = questions_collection.find_one({"_id": ObjectId(id)})
+
+        if not question:
+            return {"error": "Question not found"}
+
+        # convert ObjectId → string
+        question["_id"] = str(question["_id"])
+
+        # 🔥 FILTER ONLY VISIBLE TESTCASES
+        question["testcases"] = [
+            tc for tc in question.get("testcases", [])
+            if not tc.get("hidden", False)
+        ]
+
+        return question
+
+    except Exception as e:
+        print("ERROR:", e)
+        return {"error": "Server error", "details": str(e)}
 
 @router.get("/questions/difficulty/{difficulty}")
 def read_questions_by_difficulty(difficulty: str):

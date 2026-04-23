@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { getQuestionById } from "../services/api";
@@ -7,21 +7,7 @@ import Editor from "@monaco-editor/react";
 import axios from "axios";
 import "../styles/questionsDetail.css";
 import { LANGUAGES, TEMPLATES } from "../constants/editorTemplates";
-
-/* 🔥 SIMPLE MODAL COMPONENT */
-function ConfirmModal({ message, onConfirm, onCancel }) {
-  return (
-    <div className="modal-overlay">
-      <div className="modal-box">
-        <p>{message}</p>
-        <div className="modal-actions">
-          <button className="cancel-btn" onClick={onCancel}>Cancel</button>
-          <button className="confirm-btn" onClick={onConfirm}>Confirm</button>
-        </div>
-      </div>
-    </div>
-  );
-}
+import { useStopwatch } from "../hooks/useStopWatch";
 
 function QuestionDetail() {
   const { id } = useParams();
@@ -30,108 +16,81 @@ function QuestionDetail() {
   const [language, setLanguage] = useState("cpp");
   const [code, setCode] = useState("");
   const [leftWidth, setLeftWidth] = useState(50);
-
-  const [submitLoading, setSubmitLoading] = useState(false);
-  const [runLoading, setRunLoading] = useState(false);
-
-  // ✅ FIX: missing output state
-  const [output, setOutput] = useState("");
-
-  // 🔥 TEST CASES
+  const [testcases, setTestcases] = useState([]);
   const [activeCase, setActiveCase] = useState(0);
-  const [testCases, setTestCases] = useState([{ input: "" }]);
+  const [runLoading, setRunLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [results, setResults] = useState([]);
+  const [verdict, setVerdict] = useState("");
 
-  const [modal, setModal] = useState(null);
-  const isChangingLanguage = useRef(false);
+  // ✅ Stopwatch ONLY controlled by buttons
+  const { formatted, isRunning, start, stop, reset } = useStopwatch();
 
-  // ✅ LOAD QUESTION
+  // ❌ NO AUTO START HERE (IMPORTANT FIX)
+
+  // 📦 Fetch question
   useEffect(() => {
     getQuestionById(id)
       .then((res) => setQuestion(res.data))
       .catch(() => toast.error("Failed to load question"));
   }, [id]);
 
-  // ✅ LOAD CODE
+  // 💾 Load code
   useEffect(() => {
-    isChangingLanguage.current = true;
-
     const key = `code_${id}_${language}`;
-    const savedCode = localStorage.getItem(key);
-
-    const toLoad =
-      savedCode && savedCode.trim() !== ""
-        ? savedCode
-        : TEMPLATES[language] ?? "";
-
-    localStorage.setItem(key, toLoad);
-    setCode(toLoad);
-
-    setTimeout(() => {
-      isChangingLanguage.current = false;
-    }, 0);
+    const saved = localStorage.getItem(key);
+    setCode(saved?.trim() ? saved : TEMPLATES[language] || "");
   }, [id, language]);
 
-  // ✅ SAVE CODE
+  // 💾 Save code
   useEffect(() => {
-    if (isChangingLanguage.current) return;
     localStorage.setItem(`code_${id}_${language}`, code);
   }, [code, id, language]);
 
-  // 🔥 LANGUAGE CHANGE
-  const handleLanguageChange = (lang) => {
-    const savedCode = localStorage.getItem(`code_${id}_${language}`);
-    const isModified =
-      savedCode !== null && savedCode !== (TEMPLATES[language] ?? "");
-
-    if (isModified) {
-      setModal({
-        message: "Switch language? Your code will be saved.",
-        onConfirm: () => {
-          setLanguage(lang);
-          setModal(null);
-        },
-        onCancel: () => setModal(null),
-      });
-    } else {
-      setLanguage(lang);
+  // 🧪 Load testcases
+  useEffect(() => {
+    if (question?.testcases) {
+      setTestcases(question.testcases);
     }
+  }, [question]);
+
+  // 🚀 RUN (NO TIMER INTERFERENCE)
+  const handleRun = async () => {
+    setRunLoading(true);
+    setResults([]);
+    setVerdict("");
+
+    try {
+      const res = await axios.post("http://localhost:8000/run", {
+        question_id: id,
+        code,
+        language,
+      });
+
+      if (res.data.error) {
+        toast.error(res.data.error);
+        setVerdict("Error");
+        return;
+      }
+
+      setResults(res.data.results || []);
+      setVerdict(res.data.final_verdict || "Error");
+    } catch (err) {
+      console.error(err);
+      toast.error("Execution failed");
+      setVerdict("Error");
+    }
+
+    setRunLoading(false);
   };
 
-  // 🔥 RESET
-  const handleReset = () => {
-    setModal({
-      message: "Reset code?",
-      onConfirm: () => {
-        const template = TEMPLATES[language] ?? "";
-        setCode(template);
-        localStorage.setItem(`code_${id}_${language}`, template);
-        toast.success("Code reset");
-        setModal(null);
-      },
-      onCancel: () => setModal(null),
-    });
-  };
-
-  // ✅ RESIZE
-  const handleDrag = useCallback((e) => {
-    const newWidth = (e.clientX / window.innerWidth) * 100;
-    if (newWidth > 20 && newWidth < 80) setLeftWidth(newWidth);
-  }, []);
-
-  const handleMouseUp = useCallback(() => {
-    document.removeEventListener("mousemove", handleDrag);
-    document.removeEventListener("mouseup", handleMouseUp);
-  }, [handleDrag]);
-
-  const handleMouseDown = useCallback(() => {
-    document.addEventListener("mousemove", handleDrag);
-    document.addEventListener("mouseup", handleMouseUp);
-  }, [handleDrag, handleMouseUp]);
-
-  // ✅ SUBMIT
+  // 🚀 SUBMIT
   const handleSubmit = async () => {
+    if (verdict !== "Accepted")
+      return toast.error("Run & pass all testcases first");
+
     const userId = localStorage.getItem("user_id");
-    if (!userId) return toast.error("Please login first");
+    if (!userId) return toast.error("Login required");
 
     setSubmitLoading(true);
 
@@ -139,39 +98,36 @@ function QuestionDetail() {
       await axios.post("http://localhost:8000/attempts", {
         user_id: userId,
         question_id: id,
-        status: "solved",
+        question_name: question.title,
+        company_names: JSON.stringify(question.company),
         difficulty: question.difficulty,
+        status: "solved",
       });
 
-      toast.success("Submitted successfully");
-    } catch {
-      toast.error("Submission failed");
+      toast.success("Submitted successfully!");
+    } catch (err) {
+      toast.error("Submit failed");
     }
 
     setSubmitLoading(false);
   };
 
-  // 🔥 RUN
-  const handleRun = async () => {
-    setRunLoading(true);
+  // 🖱 RESIZER
+  const handleDrag = useCallback((e) => {
+    const newWidth = (e.clientX / window.innerWidth) * 100;
+    if (newWidth > 20 && newWidth < 80) setLeftWidth(newWidth);
+  }, []);
 
-    try {
-      const res = await axios.post("http://localhost:8000/run", {
-        code,
-        language,
-        input: testCases[activeCase]?.input || "",
-      });
-
-      setOutput(res.data.output);
-    } catch {
-      setOutput("Error running code");
-      toast.error("Execution failed");
-    }
-
-    setRunLoading(false);
+  const handleMouseDown = () => {
+    document.addEventListener("mousemove", handleDrag);
+    document.addEventListener("mouseup", () => {
+      document.removeEventListener("mousemove", handleDrag);
+    });
   };
 
-  if (!question) return <p className="loading">Loading question...</p>;
+  if (!question) return <p>Loading...</p>;
+
+  const visibleTestcases = testcases.filter((tc) => !tc.hidden);
 
   return (
     <>
@@ -179,187 +135,189 @@ function QuestionDetail() {
 
       <div className="detail-container">
 
-        {/* LEFT */}
+        {/* LEFT PANEL */}
         <div className="question-left" style={{ width: `${leftWidth}%` }}>
-          <h2>{question.title}</h2>
 
-          <div className="meta">
-            <span className={`difficulty ${question.difficulty.toLowerCase()}`}>
-              {question.difficulty}
-            </span>
-            {question.company?.map((c, i) => (
-  <span key={i} className="company">{c}</span>
-))}
-          </div>
+  <h2>{question.title}</h2>
 
-         {/* DESCRIPTION */}
-<p className="description">{question.description}</p>
+  {/* META */}
+  <div className="meta">
+    <span className={`difficulty ${question.difficulty.toLowerCase()}`}>
+      {question.difficulty}
+    </span>
 
-{/* FULL DESCRIPTION */}
-{question.full_description?.length > 0 && (
-  <div className="section">
-    <h3>Details</h3>
-    <ul>
-      {question.full_description.map((point, index) => (
-        <li key={index}>{point}</li>
-      ))}
-    </ul>
-  </div>
-)}
+    {question.company?.map((c, i) => (
+      <span key={i} className="company">{c}</span>
+    ))}
 
-{/* EXAMPLES */}
-{question.examples?.length > 0 && (
-  <div className="section">
-    <h3>Examples</h3>
-    {question.examples.map((ex, index) => (
-      <div key={index} className="example-box">
-        <p><strong>Input:</strong> {ex.input}</p>
-        <p><strong>Output:</strong> {ex.output}</p>
-        {ex.explanation && (
-          <p><strong>Explanation:</strong> {ex.explanation}</p>
-        )}
-      </div>
+    <span className="topic">{question.topic}</span>
+
+    {question.tags?.map((tag, i) => (
+      <span key={i} className="tag">{tag}</span>
     ))}
   </div>
-)}
 
-{/* CONSTRAINTS */}
-{question.constraints?.length > 0 && (
-  <div className="section">
-    <h3>Constraints</h3>
-    <ul>
-      {question.constraints.map((c, i) => (
-        <li key={i}>{c}</li>
-      ))}
-    </ul>
-  </div>
-)}
-        </div>
+  {/* DESCRIPTION */}
+  <p className="description">{question.description}</p>
 
-        {/* RESIZER */}
+  {/* 🔥 FULL DESCRIPTION */}
+  {question.full_description?.length > 0 && (
+    <div className="section">
+      <h3>Details</h3>
+      <ul className="full-description">
+        {question.full_description.map((line, i) => (
+          <li key={i}>{line}</li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {/* 🔥 CONSTRAINTS */}
+  {question.constraints?.length > 0 && (
+    <div className="constraints-box">
+      <h3>Constraints</h3>
+      <ul>
+        {question.constraints.map((c, i) => (
+          <li key={i}><code>{c}</code></li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {/* 🔥 SAMPLE TESTCASES (VISIBLE ONLY) */}
+  {question.testcases?.filter(tc => !tc.hidden).length > 0 && (
+    <div className="section">
+      <h3>Sample Testcases</h3>
+
+      {question.testcases
+        .filter(tc => !tc.hidden)
+        .map((tc, i) => (
+          <div key={i} className="example-box">
+            
+            <p><b>Input:</b></p>
+            <pre>{tc.input}</pre>
+
+            <p><b>Expected Output:</b></p>
+            <pre>{tc.expected_output}</pre>
+
+          </div>
+        ))}
+    </div>
+  )}
+
+</div>
         <div className="resizer" onMouseDown={handleMouseDown} />
 
-        {/* RIGHT */}
+        {/* RIGHT PANEL */}
         <div className="editor-right">
 
           {/* HEADER */}
           <div className="editor-header">
-            <select
-              className="language-select"
-              value={language}
-              onChange={(e) => handleLanguageChange(e.target.value)}
-            >
-              {LANGUAGES.map((lang) => (
-                <option key={lang.value} value={lang.value}>
-                  {lang.label}
-                </option>
-              ))}
-            </select>
 
-            <div className="editor-actions">
-              <button onClick={handleReset}>Reset</button>
-
-              <button
-                className="run-btn"
-                onClick={handleRun}
-                disabled={runLoading}
+            <div className="editor-header-left">
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
               >
+                {LANGUAGES.map((l) => (
+                  <option key={l.value} value={l.value}>
+                    {l.label}
+                  </option>
+                ))}
+              </select>
+
+              {/* ✅ STOPWATCH (MANUAL CONTROL ONLY) */}
+              <div className={`stopwatch ${isRunning ? "running" : "paused"}`}>
+                <span>⏱</span>
+                <span>{formatted}</span>
+
+                <button onClick={isRunning ? stop : start}>
+                  {isRunning ? "⏸" : "▶"}
+                </button>
+
+                <button onClick={reset}>↺</button>
+              </div>
+            </div>
+
+            <div>
+              <button onClick={handleRun}>
                 {runLoading ? "Running..." : "Run"}
               </button>
 
-              <button
-                className="submit-btn"
-                onClick={handleSubmit}
-                disabled={submitLoading}
-              >
+              <button onClick={handleSubmit}>
                 {submitLoading ? "Submitting..." : "Submit"}
               </button>
             </div>
+
           </div>
 
           {/* EDITOR */}
-          <div style={{ height: "60%" }}>
+          <div className="editor-container">
             <Editor
               height="100%"
               language={language}
               theme="vs-dark"
               value={code}
-              onChange={(value) => setCode(value ?? "")}
+              onChange={(v) => setCode(v || "")}
               options={{
                 fontSize: 14,
                 minimap: { enabled: false },
-                automaticLayout: true,
+                scrollBeyondLastLine: false,
+                wordWrap: "on",
               }}
             />
           </div>
 
-          {/* TESTCASE PANEL */}
+          {/* TESTCASES */}
           <div className="testcase-panel">
-
             <div className="testcase-tabs">
-              {testCases.map((_, index) => (
+              {visibleTestcases.map((_, index) => (
                 <div
                   key={index}
                   className={`tab ${activeCase === index ? "active" : ""}`}
                   onClick={() => setActiveCase(index)}
                 >
                   Case {index + 1}
-
-                  {testCases.length > 1 && (
-                    <span
-                      className="close"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const updated = testCases.filter((_, i) => i !== index);
-                        setTestCases(updated);
-                        setActiveCase(0);
-                      }}
-                    >
-                      ×
-                    </span>
-                  )}
                 </div>
               ))}
-
-              <button
-                className="add-case"
-                onClick={() => {
-                  setTestCases([...testCases, { input: "" }]);
-                  setActiveCase(testCases.length);
-                }}
-              >
-                +
-              </button>
             </div>
 
-            {/* INPUT */}
-            <textarea
-              value={testCases[activeCase]?.input || ""}
-              onChange={(e) => {
-                const updated = [...testCases];
-                updated[activeCase].input = e.target.value;
-                setTestCases(updated);
-              }}
-              placeholder="Enter input..."
-            />
+            {visibleTestcases.length > 0 && (
+              <div className="io-row">
+                <div className="io-box">
+                  <p>Input</p>
+                  <textarea value={visibleTestcases[activeCase]?.input} readOnly />
+                </div>
 
-            {/* OUTPUT */}
-            <div className="output-box">
-              <h4>Output</h4>
-              <pre>{output || "Run code to see output..."}</pre>
-            </div>
-
+                <div className="io-box">
+                  <p>Expected</p>
+                  <textarea value={visibleTestcases[activeCase]?.expected_output} readOnly />
+                </div>
+              </div>
+            )}
           </div>
+
+          {/* OUTPUT */}
+          <div className="output-box">
+            <h3>Results</h3>
+
+            {results.map((r, i) => (
+              <div key={i} className="result-case">
+                <p className={r.passed ? "pass" : "fail"}>
+                  {r.passed ? "✔ Passed" : "✘ Failed"}
+                </p>
+              </div>
+            ))}
+
+            {verdict && (
+              <h2 className={verdict === "Accepted" ? "pass" : "fail"}>
+                {verdict}
+              </h2>
+            )}
+          </div>
+
         </div>
       </div>
-
-      {modal && (
-        <ConfirmModal
-          message={modal.message}
-          onConfirm={modal.onConfirm}
-          onCancel={modal.onCancel}
-        />
-      )}
     </>
   );
 }
