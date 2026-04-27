@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { getQuestionById } from "../services/api";
@@ -15,7 +15,8 @@ function QuestionDetail() {
   const [question, setQuestion] = useState(null);
   const [language, setLanguage] = useState("cpp");
   const [code, setCode] = useState("");
-  const [leftWidth, setLeftWidth] = useState(50);
+  const [leftWidth, setLeftWidth] = useState(50);        // horizontal split %
+  const [bottomHeight, setBottomHeight] = useState(280); // vertical bottom panel px
   const [testcases, setTestcases] = useState([]);
   const [activeCase, setActiveCase] = useState(0);
   const [runLoading, setRunLoading] = useState(false);
@@ -23,10 +24,9 @@ function QuestionDetail() {
   const [results, setResults] = useState([]);
   const [verdict, setVerdict] = useState("");
 
-  // ✅ Stopwatch ONLY controlled by buttons
-  const { formatted, isRunning, start, stop, reset } = useStopwatch();
+  const editorRightRef = useRef(null);
 
-  // ❌ NO AUTO START HERE (IMPORTANT FIX)
+  const { formatted, isRunning, start, stop, reset } = useStopwatch();
 
   // 📦 Fetch question
   useEffect(() => {
@@ -54,76 +54,96 @@ function QuestionDetail() {
     }
   }, [question]);
 
-  // 🚀 RUN (NO TIMER INTERFERENCE)
+  // 🚀 RUN
   const handleRun = async () => {
     setRunLoading(true);
     setResults([]);
     setVerdict("");
-
     try {
       const res = await axios.post("http://localhost:8000/run", {
-        question_id: id,
-        code,
-        language,
+        question_id: id, code, language,
       });
-
-      if (res.data.error) {
-        toast.error(res.data.error);
-        setVerdict("Error");
-        return;
-      }
-
+      if (res.data.error) { toast.error(res.data.error); setRunLoading(false); return; }
       setResults(res.data.results || []);
-      setVerdict(res.data.final_verdict || "Error");
     } catch (err) {
       console.error(err);
       toast.error("Execution failed");
-      setVerdict("Error");
     }
-
     setRunLoading(false);
   };
 
   // 🚀 SUBMIT
   const handleSubmit = async () => {
-    if (verdict !== "Accepted")
-      return toast.error("Run & pass all testcases first");
-
-    const userId = localStorage.getItem("user_id");
-    if (!userId) return toast.error("Login required");
-
     setSubmitLoading(true);
-
     try {
+      const res = await axios.post("http://localhost:8000/submit", {
+        question_id: id, code, language,
+      });
+      if (res.data.error) { toast.error(res.data.error); setSubmitLoading(false); return; }
+      setResults(res.data.results || []);
+      setVerdict(res.data.verdict);
+      if (res.data.verdict !== "Accepted") {
+        toast.error("Wrong Answer");
+        setSubmitLoading(false);
+        return;
+      }
+      const userId = parseInt(localStorage.getItem("user_id"));
+
       await axios.post("http://localhost:8000/attempts", {
         user_id: userId,
         question_id: id,
         question_name: question.title,
-        company_names: JSON.stringify(question.company),
+        company_names: question.company,
         difficulty: question.difficulty,
-        status: "solved",
+        status: verdict === "Accepted" ? "solved" : "attempted",
       });
-
-      toast.success("Submitted successfully!");
+      toast.success("Accepted 🎉");
     } catch (err) {
       toast.error("Submit failed");
     }
-
     setSubmitLoading(false);
   };
 
-  // 🖱 RESIZER
-  const handleDrag = useCallback((e) => {
+  // 🖱 HORIZONTAL RESIZER (left ↔ right panels)
+  const handleHorizontalDrag = useCallback((e) => {
     const newWidth = (e.clientX / window.innerWidth) * 100;
     if (newWidth > 20 && newWidth < 80) setLeftWidth(newWidth);
   }, []);
 
-  const handleMouseDown = () => {
-    document.addEventListener("mousemove", handleDrag);
+  const handleHorizontalMouseDown = () => {
+    document.addEventListener("mousemove", handleHorizontalDrag);
     document.addEventListener("mouseup", () => {
-      document.removeEventListener("mousemove", handleDrag);
+      document.removeEventListener("mousemove", handleHorizontalDrag);
     });
   };
+
+  // 🖱 VERTICAL RESIZER (editor ↕ bottom panel)
+  const handleVerticalDrag = useCallback((e) => {
+    const container = editorRightRef.current;
+    if (!container) return;
+    const containerRect = container.getBoundingClientRect();
+    const newHeight = containerRect.bottom - e.clientY;
+    const minHeight = 100;
+    const maxHeight = containerRect.height - 100; // always leave room for editor
+    if (newHeight >= minHeight && newHeight <= maxHeight) {
+      setBottomHeight(newHeight);
+    }
+  }, []);
+
+  const handleVerticalMouseDown = useCallback((e) => {
+    e.preventDefault();
+    document.body.style.cursor = "row-resize";
+    document.body.style.userSelect = "none";
+    const onMove = (e) => handleVerticalDrag(e);
+    const onUp = () => {
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  }, [handleVerticalDrag]);
 
   if (!question) return <p>Loading...</p>;
 
@@ -132,126 +152,86 @@ function QuestionDetail() {
   return (
     <>
       <Navbar />
-
       <div className="detail-container">
 
-        {/* LEFT PANEL */}
+        {/* ── LEFT PANEL ── */}
         <div className="question-left" style={{ width: `${leftWidth}%` }}>
+          <h2>{question.title}</h2>
 
-  <h2>{question.title}</h2>
-
-  {/* META */}
-  <div className="meta">
-    <span className={`difficulty ${question.difficulty.toLowerCase()}`}>
-      {question.difficulty}
-    </span>
-
-    {question.company?.map((c, i) => (
-      <span key={i} className="company">{c}</span>
-    ))}
-
-    <span className="topic">{question.topic}</span>
-
-    {question.tags?.map((tag, i) => (
-      <span key={i} className="tag">{tag}</span>
-    ))}
-  </div>
-
-  {/* DESCRIPTION */}
-  <p className="description">{question.description}</p>
-
-  {/* 🔥 FULL DESCRIPTION */}
-  {question.full_description?.length > 0 && (
-    <div className="section">
-      <h3>Details</h3>
-      <ul className="full-description">
-        {question.full_description.map((line, i) => (
-          <li key={i}>{line}</li>
-        ))}
-      </ul>
-    </div>
-  )}
-
-  {/* 🔥 CONSTRAINTS */}
-  {question.constraints?.length > 0 && (
-    <div className="constraints-box">
-      <h3>Constraints</h3>
-      <ul>
-        {question.constraints.map((c, i) => (
-          <li key={i}><code>{c}</code></li>
-        ))}
-      </ul>
-    </div>
-  )}
-
-  {/* 🔥 SAMPLE TESTCASES (VISIBLE ONLY) */}
-  {question.testcases?.filter(tc => !tc.hidden).length > 0 && (
-    <div className="section">
-      <h3>Sample Testcases</h3>
-
-      {question.testcases
-        .filter(tc => !tc.hidden)
-        .map((tc, i) => (
-          <div key={i} className="example-box">
-            
-            <p><b>Input:</b></p>
-            <pre>{tc.input}</pre>
-
-            <p><b>Expected Output:</b></p>
-            <pre>{tc.expected_output}</pre>
-
+          <div className="meta">
+            <span className={`difficulty ${question.difficulty.toLowerCase()}`}>
+              {question.difficulty}
+            </span>
+            {question.company?.map((c, i) => <span key={i} className="company">{c}</span>)}
+            <span className="topic">{question.topic}</span>
+            {question.tags?.map((tag, i) => <span key={i} className="tag">{tag}</span>)}
           </div>
-        ))}
-    </div>
-  )}
 
-</div>
-        <div className="resizer" onMouseDown={handleMouseDown} />
+          <p className="description">{question.description}</p>
 
-        {/* RIGHT PANEL */}
-        <div className="editor-right">
+          {question.full_description?.length > 0 && (
+            <div className="section">
+              <h3>Details</h3>
+              <ul className="full-description">
+                {question.full_description.map((line, i) => <li key={i}>{line}</li>)}
+              </ul>
+            </div>
+          )}
 
-          {/* HEADER */}
+          {question.constraints?.length > 0 && (
+            <div className="constraints-box">
+              <h3>Constraints</h3>
+              <ul>
+                {question.constraints.map((c, i) => <li key={i}><code>{c}</code></li>)}
+              </ul>
+            </div>
+          )}
+
+          {question.testcases?.filter(tc => !tc.hidden).length > 0 && (
+            <div className="section">
+              <h3>Sample Testcases</h3>
+              {question.testcases.filter(tc => !tc.hidden).map((tc, i) => (
+                <div key={i} className="example-box">
+                  <p><b>Input:</b></p>
+                  <pre>{tc.input}</pre>
+                  <p><b>Expected Output:</b></p>
+                  <pre>{tc.expected_output}</pre>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* ── HORIZONTAL RESIZER ── */}
+        <div className="resizer" onMouseDown={handleHorizontalMouseDown} />
+
+        {/* ── RIGHT PANEL ── */}
+        <div className="editor-right" ref={editorRightRef}>
+
+          {/* Header */}
           <div className="editor-header">
-
             <div className="editor-header-left">
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-              >
-                {LANGUAGES.map((l) => (
-                  <option key={l.value} value={l.value}>
-                    {l.label}
-                  </option>
-                ))}
+              <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+                {LANGUAGES.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
               </select>
-
-              {/* ✅ STOPWATCH (MANUAL CONTROL ONLY) */}
               <div className={`stopwatch ${isRunning ? "running" : "paused"}`}>
                 <span>⏱</span>
                 <span>{formatted}</span>
-
-                <button onClick={isRunning ? stop : start}>
-                  {isRunning ? "⏸" : "▶"}
-                </button>
-
+                <button onClick={isRunning ? stop : start}>{isRunning ? "⏸" : "▶"}</button>
                 <button onClick={reset}>↺</button>
               </div>
             </div>
-
             <div>
-              <button onClick={handleRun}>
+              <button onClick={handleRun} disabled={runLoading}>
                 {runLoading ? "Running..." : "Run"}
               </button>
-
-              <button onClick={handleSubmit}>
+              <button onClick={handleSubmit} disabled={submitLoading}>
                 {submitLoading ? "Submitting..." : "Submit"}
               </button>
             </div>
-
           </div>
 
-          {/* EDITOR */}
+          {/* Monaco Editor — fills all remaining space above bottom panel */}
           <div className="editor-container">
             <Editor
               height="100%"
@@ -264,59 +244,94 @@ function QuestionDetail() {
                 minimap: { enabled: false },
                 scrollBeyondLastLine: false,
                 wordWrap: "on",
+                automaticLayout: true,
               }}
             />
           </div>
 
-          {/* TESTCASES */}
-          <div className="testcase-panel">
-            <div className="testcase-tabs">
-              {visibleTestcases.map((_, index) => (
-                <div
-                  key={index}
-                  className={`tab ${activeCase === index ? "active" : ""}`}
-                  onClick={() => setActiveCase(index)}
-                >
-                  Case {index + 1}
+          {/* ↕ VERTICAL RESIZER BAR */}
+          <div className="vertical-resizer" onMouseDown={handleVerticalMouseDown}>
+            <div className="vertical-resizer-dots" />
+          </div>
+
+          {/* Bottom panel — resizable height */}
+          <div className="bottom-panel" style={{ height: `${bottomHeight}px` }}>
+
+            {/* Testcases tab */}
+            <div className="testcase-panel">
+              <div className="testcase-tabs">
+                {visibleTestcases.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`tab ${activeCase === index ? "active" : ""}`}
+                    onClick={() => setActiveCase(index)}
+                  >
+                    Case {index + 1}
+                  </div>
+                ))}
+              </div>
+              {visibleTestcases.length > 0 && (
+                <div className="io-row">
+                  <div className="io-box">
+                    <p>Input</p>
+                    <textarea value={visibleTestcases[activeCase]?.input} readOnly />
+                  </div>
+                  <div className="io-box">
+                    <p>Expected</p>
+                    <textarea value={visibleTestcases[activeCase]?.expected_output} readOnly />
+                  </div>
                 </div>
-              ))}
+              )}
             </div>
 
-            {visibleTestcases.length > 0 && (
-              <div className="io-row">
-                <div className="io-box">
-                  <p>Input</p>
-                  <textarea value={visibleTestcases[activeCase]?.input} readOnly />
+            {/* Output */}
+            <div className="output-box">
+              <h3>Results</h3>
+              {results.map((r, i) => (
+                <div key={i} className={`result-case ${r.passed ? "result-pass" : "result-fail"}`}>
+                  <p className={r.passed ? "pass" : "fail"}>
+                    {r.passed ? `✔ Case ${i + 1} Passed` : `✘ Case ${i + 1} Failed`}
+                  </p>
+                  {!r.passed && (
+                    <>
+                      <div className="output-row">
+                        <div className="output-col">
+                          <span className="output-label">Your Output</span>
+                          <pre>{r.output || "(empty)"}</pre>
+                        </div>
+                        <div className="output-col">
+                          <span className="output-label">Expected</span>
+                          <pre>{r.expected || "(empty)"}</pre>
+                        </div>
+                      </div>
+                      {r.compile_output && (
+                        <div className="error-box">
+                          <span className="output-label error-label">Compile Error</span>
+                          <pre>{r.compile_output}</pre>
+                        </div>
+                      )}
+                      {r.stderr && !r.compile_output && (
+                        <div className="error-box">
+                          <span className="output-label error-label">Runtime Error</span>
+                          <pre>{r.stderr}</pre>
+                        </div>
+                      )}
+                      {r.status && r.status !== "Accepted" && (
+                        <p className="status-label">Status: {r.status}</p>
+                      )}
+                    </>
+                  )}
                 </div>
+              ))}
+              {verdict && (
+                <h2 className={verdict === "Accepted" ? "pass" : "fail"}>
+                  {verdict === "Accepted" ? "✅ Accepted" : "❌ Wrong Answer"}
+                </h2>
+              )}
+            </div>
 
-                <div className="io-box">
-                  <p>Expected</p>
-                  <textarea value={visibleTestcases[activeCase]?.expected_output} readOnly />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* OUTPUT */}
-          <div className="output-box">
-            <h3>Results</h3>
-
-            {results.map((r, i) => (
-              <div key={i} className="result-case">
-                <p className={r.passed ? "pass" : "fail"}>
-                  {r.passed ? "✔ Passed" : "✘ Failed"}
-                </p>
-              </div>
-            ))}
-
-            {verdict && (
-              <h2 className={verdict === "Accepted" ? "pass" : "fail"}>
-                {verdict}
-              </h2>
-            )}
-          </div>
-
-        </div>
+          </div>{/* end bottom-panel */}
+        </div>{/* end editor-right */}
       </div>
     </>
   );

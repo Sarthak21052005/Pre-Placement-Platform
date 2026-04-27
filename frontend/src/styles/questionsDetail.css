@@ -7,30 +7,29 @@
 
 /* ================= LEFT PANEL ================= */
 .question-left {
-  width: 50%;
   min-width: 300px;
   padding: 25px;
   overflow-y: auto;
   border-right: 1px solid #e5e7eb;
 }
 
+/* ================= HORIZONTAL RESIZER ================= */
+.resizer {
+  width: 6px;
+  cursor: col-resize;
+  background: #e5e7eb;
+  flex-shrink: 0;
+}
+.resizer:hover { background: #9ca3af; }
+
 /* ================= RIGHT PANEL ================= */
 .editor-right {
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100%;
-}
-
-/* ================= RESIZER ================= */
-.resizer {
-  width: 6px;
-  cursor: col-resize;
-  background: #e5e7eb;
-}
-
-.resizer:hover {
-  background: #9ca3af;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* ================= HEADER ================= */
@@ -41,9 +40,9 @@
   background: #1f2937;
   padding: 10px 15px;
   border-bottom: 1px solid #374151;
+  flex-shrink: 0;
 }
 
-/* dropdown */
 .editor-header select {
   background: #111827;
   color: white;
@@ -52,7 +51,6 @@
   border-radius: 6px;
 }
 
-/* buttons */
 .editor-header button {
   margin-left: 10px;
   padding: 6px 14px;
@@ -61,43 +59,83 @@
   cursor: pointer;
   font-weight: 500;
 }
+.editor-header button:first-of-type { background: #2563eb; color: white; }
+.editor-header button:last-of-type  { background: #16a34a; color: white; }
+.editor-header button:disabled { opacity: 0.6; cursor: not-allowed; }
 
-.editor-header button:first-of-type {
-  background: #2563eb;
-  color: white;
-}
-
-.editor-header button:last-of-type {
-  background: #16a34a;
-  color: white;
-}
-
-/* ================= EDITOR ================= */
+/* ================= MONACO EDITOR ================= */
 .editor-container {
-  flex: 6; /* biggest */
+  flex: 1;           /* ✅ takes ALL remaining space above bottom panel */
+  min-height: 0;     /* ✅ critical flex shrink fix */
   position: relative;
+  overflow: hidden;
 }
 
 .monaco-editor,
-.monaco-editor-background {
+.monaco-editor-background,
+.monaco-editor .overflow-guard,
+.monaco-editor .monaco-scrollable-element {
   height: 100% !important;
+}
+
+/* ================= VERTICAL RESIZER ================= */
+.vertical-resizer {
+  height: 6px;
+  cursor: row-resize;
+  background: #374151;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+.vertical-resizer:hover { background: #6366f1; }
+
+/* Dotted grip indicator */
+.vertical-resizer-dots {
+  width: 40px;
+  height: 3px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    to right,
+    #9ca3af 0px, #9ca3af 3px,
+    transparent 3px, transparent 7px
+  );
+}
+.vertical-resizer:hover .vertical-resizer-dots {
+  background: repeating-linear-gradient(
+    to right,
+    #a5b4fc 0px, #a5b4fc 3px,
+    transparent 3px, transparent 7px
+  );
+}
+
+/* ================= BOTTOM PANEL (testcases + output) ================= */
+.bottom-panel {
+  display: flex;
+  flex-direction: row;   /* testcase panel left, output right */
+  flex-shrink: 0;
+  min-height: 100px;
+  overflow: hidden;
+  border-top: 1px solid #374151;
 }
 
 /* ================= TESTCASE PANEL ================= */
 .testcase-panel {
-  flex: 2;
+  width: 50%;
   background: #2b2b2b;
   padding: 10px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  border-right: 1px solid #374151;
 }
 
-/* testcase tabs */
 .testcase-tabs {
   display: flex;
   gap: 10px;
   margin-bottom: 10px;
+  flex-shrink: 0;
 }
 
 .tab {
@@ -108,17 +146,13 @@
   color: #d1d5db;
   font-size: 13px;
 }
+.tab.active { background: #6366f1; color: white; }
 
-.tab.active {
-  background: #6366f1;
-  color: white;
-}
-
-/* IO layout */
 .io-row {
   display: flex;
   gap: 10px;
   flex: 1;
+  min-height: 0;
 }
 
 .io-box {
@@ -126,14 +160,13 @@
   display: flex;
   flex-direction: column;
 }
-
 .io-box p {
   margin-bottom: 5px;
   font-size: 12px;
   color: #9ca3af;
+  flex-shrink: 0;
 }
 
-/* textarea */
 textarea {
   flex: 1;
   background: #111827;
@@ -142,16 +175,23 @@ textarea {
   padding: 10px;
   border: none;
   resize: none;
+  min-height: 0;
 }
 
 /* ================= OUTPUT PANEL ================= */
 .output-box {
-  flex: 2;
+  width: 50%;
   background: #1e1e1e;
   color: #e5e7eb;
   padding: 15px;
-  border-top: 1px solid #374151;
   overflow-y: auto;
+}
+
+.output-box h3 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #9ca3af;
+  flex-shrink: 0;
 }
 
 /* result card */
@@ -162,14 +202,10 @@ textarea {
   padding: 12px;
   margin-bottom: 12px;
 }
+.result-pass { border-color: #22c55e !important; }
+.result-fail { border-color: #ef4444 !important; }
 
-/* text */
-.result-case p {
-  margin: 6px 0;
-  font-size: 13px;
-}
-
-/* code */
+.result-case p { margin: 6px 0; font-size: 13px; }
 .result-case pre {
   background: #020617;
   color: #e2e8f0;
@@ -179,81 +215,61 @@ textarea {
   font-size: 13px;
 }
 
-/* pass/fail */
-.pass {
-  color: #22c55e;
+.pass { color: #22c55e; font-weight: 600; }
+.fail { color: #ef4444; font-weight: 600; }
+
+.output-box h2 { text-align: center; margin-top: 10px; }
+
+/* output comparison row */
+.output-row { display: flex; gap: 10px; margin-top: 8px; }
+.output-col { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.output-col pre {
+  background: #020617;
+  color: #e2e8f0;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  overflow-x: auto;
+  margin: 0;
+}
+
+.output-label {
+  font-size: 11px;
   font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.fail {
-  color: #ef4444;
-  font-weight: 600;
-}
-
-/* verdict */
-.output-box h2 {
-  text-align: center;
-  margin-top: 10px;
-}
-
-/* ================= META ================= */
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 10px 0;
-}
-
-.company {
-  padding: 4px 10px;
-  background: #e5e7eb;
-  border-radius: 20px;
+.error-box { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+.error-box pre {
+  background: #1a0505;
+  color: #fca5a5;
+  padding: 8px;
+  border-radius: 6px;
   font-size: 12px;
+  overflow-x: auto;
+  margin: 0;
+  white-space: pre-wrap;
 }
+.error-label { color: #ef4444 !important; }
+.status-label { font-size: 12px; color: #f59e0b; margin-top: 4px; }
 
-.topic {
-  padding: 4px 10px;
-  background: #dbeafe;
-  color: #1d4ed8;
-  border-radius: 20px;
-  font-size: 12px;
-}
+/* ================= META TAGS ================= */
+.meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.company { padding: 4px 10px; background: #e5e7eb; border-radius: 20px; font-size: 12px; }
+.topic   { padding: 4px 10px; background: #dbeafe; color: #1d4ed8; border-radius: 20px; font-size: 12px; }
+.tag     { padding: 4px 10px; background: #ede9fe; color: #6d28d9; border-radius: 20px; font-size: 12px; }
 
-.tag {
-  padding: 4px 10px;
-  background: #ede9fe;
-  color: #6d28d9;
-  border-radius: 20px;
-  font-size: 12px;
-}
+.difficulty          { padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+.difficulty.easy     { background: #dcfce7; color: #16a34a; }
+.difficulty.medium   { background: #fef3c7; color: #d97706; }
+.difficulty.hard     { background: #fee2e2; color: #dc2626; }
 
-.difficulty {
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-}
+/* ================= DESCRIPTION SECTIONS ================= */
+.description { line-height: 1.6; }
 
-.difficulty.easy {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
-.difficulty.medium {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-.difficulty.hard {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-/* description */
-.full-description {
-  margin: 12px 0;
-  padding-left: 20px;
-  line-height: 1.8;
-}
+.full-description { margin: 12px 0; padding-left: 20px; line-height: 1.8; }
 
 .constraints-box {
   margin-top: 16px;
@@ -261,9 +277,32 @@ textarea {
   background: #dededf;
   border-radius: 8px;
   border-left: 3px solid #5c6bc0;
-} 
-/* ================= STOPWATCH ================= */
+}
 
+.section {
+  margin-top: 20px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  margin-left: 6px;
+  padding: 10px;
+}
+.section h3 { margin-bottom: 8px; color: #1f2937; }
+
+.example-box {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.example-box pre {
+  background: #020617;
+  color: #e2e8f0;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+/* ================= STOPWATCH ================= */
 .stopwatch {
   display: flex;
   align-items: center;
@@ -273,93 +312,10 @@ textarea {
   padding: 4px 10px;
   background: #384f67;
   border-radius: 8px;
-  /* border: 1px solid #374151; */
+  border: 1px solid transparent;
+  transition: border-color 0.3s ease;
 }
+.stopwatch.running { border-color: #22c55e; }
+.stopwatch.paused  { border-color: #f59e0b; }
 
-/* icon */
-.stopwatch-icon {
-  font-size: 14px;
-  color: #9ca3af;
-}
-
-/* time display */
-.stopwatch-time {
-  font-size: 14px;
-  font-weight: 600;
-  color: #e5e7eb;
-  letter-spacing: 1px;
-  min-width: 60px;
-}
-
-/* buttons */
-.sw-btn {
-  background: transparent;
-  border: none;
-  color: #9ca3af;
-  font-size: 14px;
-  cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-}
-
-/* hover */
-.sw-btn:hover {
-  background: #727374;
-  color: #ffffff;
-}
-
-/* active click */
-.sw-btn:active {
-  transform: scale(0.9);
-}
-
-/* ================= HEADER ALIGNMENT FIX ================= */
-
-/* make header left side aligned properly */
-.editor-header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* optional: timer highlight when running */
-.stopwatch.running {
-  border-color: #22c55e;
-}
-
-/* optional: paused state */
-.stopwatch.paused {
-  border-color: #f59e0b;
-}
-
-.section {
-  margin-top: 20px;
-}
-
-.section h3 {
-  margin-bottom: 8px;
-  color: #1f2937;
-}
-
-.example-box {
-  background: #f8fafc;
-  border: 1px solid #e5e7eb;
-  padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-}
-
-.example-box pre {
-  background: #020617;
-  color: #e2e8f0;
-  padding: 8px;
-  border-radius: 6px;
-}
-
-.section{
-  background: #e5e7eb;
-  border-radius: px;
-  margin-left: 6px;
-  border:10px;
-}
+.editor-header-left { display: flex; align-items: center; gap: 12px; }

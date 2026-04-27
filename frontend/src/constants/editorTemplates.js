@@ -1,84 +1,36 @@
+// constants/editorTemplates.js
+//
+// Users write ONLY the function body — the backend wraps it with main().
+// Templates match the LeetCode / function-only style.
+
 export const LANGUAGES = [
-  { label: "C++", value: "cpp" },
-  { label: "JavaScript", value: "javascript" },
-  { label: "TypeScript", value: "typescript" },
-  { label: "Python", value: "python" },
-  { label: "Java", value: "java" },
-  { label: "C#", value: "csharp" },
-  { label: "JSON", value: "json" },
-  { label: "HTML", value: "html" },
-  { label: "CSS", value: "css" },
-  { label: "Go", value: "go" },
-  { label: "Ruby", value: "ruby" },
-  { label: "PHP", value: "php" },
-  { label: "Swift", value: "swift" },
-  { label: "Kotlin", value: "kotlin" },
+  { value: "cpp",    label: "C++ (GCC 9)" },
+  { value: "python", label: "Python 3" },
+  { value: "java",   label: "Java 13" },
 ];
 
+// ── C++ ──────────────────────────────────────────────────────────────────────
+const CPP_DEFAULT = `class Solution {
+public:
+    // Write your solution here.
+    // Example: vector<int> twoSum(vector<int>& nums, int target) { ... }
+};`;
+
+// ── Python ───────────────────────────────────────────────────────────────────
+const PYTHON_DEFAULT = `class Solution:
+    # Write your solution here.
+    # Example: def twoSum(self, nums: List[int], target: int) -> List[int]:
+    pass`;
+
+// ── Java ─────────────────────────────────────────────────────────────────────
+const JAVA_DEFAULT = `// Write your solution inside this class.
+// Example:
+// public int[] twoSum(int[] nums, int target) {
+//     ...
+// }`;
+
 export const TEMPLATES = {
-  cpp: `#include <iostream>
-using namespace std;
-
-int main() {
-
-}`,
-
-  javascript: `//Write your code here`,
-
-  typescript: `//Write your code here`,
-
-  python: `#Write your code here`,
-
-  java: `class Solution {
-    public static void main(String[] args) {
-            // Write your code here
-    }
-}`,
-
-  csharp: `using System;
-
-class Program {
-    static void Main() {
-
-    }
-}`,
-
-  json: `{
-  
-}`,
-
-  html: `<!DOCTYPE html>
-<html>
-  <body>
-    <!-- HTML here -->
-  </body>
-</html>`,
-
-  css: `/* CSS here */`,
-
-  go: `package main
-
-import "fmt"
-
-func main() {
-
-}`,
-
-  ruby: `def solve
-
-end`,
-
-  php: `<?php
-
-?>`,
-
-  swift: `import Foundation
-
-func solve() {
-
-}`,
-
-  kotlin: `fun main() {
-
-}`,
+  cpp:    CPP_DEFAULT,
+  python: PYTHON_DEFAULT,
+  java:   JAVA_DEFAULT,
 };
