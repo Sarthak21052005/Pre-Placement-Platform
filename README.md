@@ -2,267 +2,195 @@
 
 ## 📌 Project Overview
 
-The **Pre-Placement Platform** is a full-stack web application designed to centralize placement preparation. Students can practice **company-specific coding questions, track performance, and visualize progress — all in one place**.
+The **Pre-Placement Platform** is a full-stack web application designed to centralize placement preparation. Students can practice **company-specific coding questions, execute code, submit solutions, and track performance — all in one place**.
+
+It combines features inspired by **LeetCode + GFG + InterviewBit** into a unified, data-driven system.
 
 ---
 
 ## 🎯 Project Vision
 
-* Single platform for placement preparation
-* Company-wise + Topic-wise practice
-* Track user performance with analytics
-* Eliminate duplicate effort (LeetCode-style tracking)
-* (Future) AI-driven recommendations
+- Single platform for placement preparation  
+- Company-wise + Topic-wise structured practice  
+- Real-time performance tracking with analytics  
+- Competitive environment with leaderboard  
+- (Future) AI-driven personalized learning  
 
 ---
 
 ## 🏗️ Tech Stack
 
 ### 🔹 Backend
-
-* FastAPI (Python)
-* SQLAlchemy ORM
-* JWT Authentication
+- FastAPI (Python)
+- SQLAlchemy ORM
+- JWT Authentication
 
 ### 🔹 Frontend
-
-* React.js
-* Axios
-* Monaco Editor
-* Recharts (Charts)
-* React Calendar Heatmap
+- React.js
+- Axios
+- Monaco Editor
+- Recharts (Charts)
+- React Calendar Heatmap
 
 ### 🔹 Databases
-
-* PostgreSQL → Users, authentication, attempts
-* MongoDB → Questions (coding + aptitude)
-
----
-
-## ⚙️ Backend Architecture
-
-```
-backend/
-│
-├── routes/        # API endpoints
-├── schemas/       # Pydantic models
-├── models/        # SQLAlchemy models
-├── CRUD/          # DB logic
-├── core/          # Auth & security
-├── database/      # Mongo + PostgreSQL
-└── main.py
-```
+- PostgreSQL → Users, Attempts, Analytics  
+- MongoDB → Questions, Metadata  
 
 ---
 
-## 🎨 Frontend Architecture
+## ⚙️ Core Features Implemented
 
-```
-frontend/
-│
-├── pages/         # Dashboard, Profile, Settings
-├── components/    # Navbar, Cards, Charts
-├── services/      # API calls
-├── styles/        # CSS
-└── constants/     # Editor templates
-```
+### 🔐 Authentication & Security
+- JWT-based authentication
+- Role-based access (User/Admin)
+- Protected API routes
+- Secure password handling
 
 ---
 
-## ✅ Features Implemented
+### 👨‍💻 Code Execution System (🔥 NEW)
 
-### 🔐 Authentication
-
-* User & Admin login/register
-* JWT-based authentication
-* Role-based access
-
----
-
-### 👨‍💻 Code Practice System
-
-* Monaco Editor integration
-* Multi-language support
-* Run & Submit system
-* Language templates
+- Integrated **Judge0 via RapidAPI**
+- Supports multiple languages (C++, Python, Java)
+- Two modes:
+  - **Run** → executes visible test cases
+  - **Submit** → executes all test cases (including hidden)
 
 ---
 
 ### 🧠 Question System
-
-* MongoDB-based question storage
-* Filter by:
-
-  * Company
-  * Topic
-  * Difficulty
-
----
-
-### 📊 Attempts System (🔥 Improved)
-
-* Tracks solved questions
-* **Prevents duplicate counting (LeetCode behavior)**
-* Stores:
-
-  * user_id
-  * question_id
-  * difficulty
-  * timestamp
+- MongoDB-based question storage
+- Filter by:
+  - Company
+  - Topic
+  - Difficulty
+- Hidden + visible test cases support
 
 ---
 
-### 📈 Dashboard Analytics (🔥 NEW)
+### 📊 Attempts System (🔥 UPGRADED)
 
-* Problems solved count
-* Difficulty split (Easy/Medium/Hard)
-* Topic-wise progress
-* Company-wise progress
-* Interactive charts (Pie + Bar)
-
----
-
-### 📅 Profile Activity Heatmap (🔥 NEW)
-
-* GitHub-style submission graph
-* Daily activity tracking
-* Tooltip support
-* Stats:
-
-  * Total submissions
-  * Active days
-  * 🔥 Streak counter
+- Tracks every submission
+- Uses **verdict-based system**:
+  - `Accepted`
+  - `Wrong Answer`
+  - `Runtime Error`
+- Prevents duplicate counting (LeetCode behavior)
+- Handles multiple attempts intelligently
 
 ---
 
-### ⚙️ Admin Panel
+### 🏆 Leaderboard System (🔥 NEW)
 
-* Add/Delete questions
-* Manage users
-* Full control over platform
-
----
-
-### ⚙️ Settings (User)
-
-* Update profile
-* Change password
-* Delete account
-* Toast notifications + modals
+- Ranks users based on:
+  - Problems solved
+  - Accuracy
+- Handles duplicate attempts correctly
+- Competitive ranking system (LeetCode-style)
 
 ---
 
-### 🎯 UI/UX Improvements
+### 📈 Dashboard Analytics
 
-* Modern dashboard UI
-* Smooth animations
-* Responsive design
-* Clean card-based layout
+- Total problems solved
+- Difficulty distribution
+- Topic-wise breakdown
+- Company-wise progress
+- Accuracy tracking
 
 ---
 
-## 🔗 API Endpoints
+### 📅 Activity Heatmap
 
-### 🔐 Auth
+- GitHub-style submission graph
+- Daily activity tracking
+- Streak tracking system
 
-```
-POST /auth/register
-POST /auth/login
-PUT  /auth/update-profile
-PUT  /auth/change-password
-DELETE /auth/delete-account
-```
+---
 
-### 📚 Questions
+## ⚡ Judge0 Integration (RapidAPI)
 
-```
-GET /questions
-GET /questions/{id}
-GET /questions/company/{company}
-GET /questions/topic/{topic}
-GET /questions/difficulty/{difficulty}
-```
+### 🔹 What is Judge0?
 
-### 📊 Attempts
+Judge0 is an **online code execution engine** that compiles and runs code in a secure sandbox.
 
-```
-POST /attempts
-GET  /attempts/stats/{user_id}
-GET  /attempts/heatmap/{user_id}
-```
+---
 
-### 👨‍💼 Admin
+### 🔹 How We Used It
 
-```
-POST   /admin/login
-POST   /admin/register
-GET    /admin/questions/all
-POST   /admin/questions/add
-DELETE /admin/questions/{id}
-GET    /admin/users/all
-DELETE /admin/users/{id}
-```
+We integrated Judge0 using **RapidAPI**:
+
+- Backend sends code → Judge0 API  
+- Judge0 executes code securely  
+- Returns:
+  - Output
+  - Errors
+  - Execution status  
+
+---
+
+### 🔹 Flow
+
+User Code → FastAPI → Judge0 (RapidAPI) → Result → Backend → Frontend
+
+
+---
+
+### 🔹 Why RapidAPI?
+
+- No need to self-host initially  
+- Quick integration  
+- Reliable execution environment  
+
+---
+
+## 🔐 Security Measures (VERY IMPORTANT)
+
+### ✅ API Security
+- JWT authentication for all protected routes  
+- Role-based authorization  
+
+### ✅ Code Execution Safety
+- Code executed in Judge0 sandbox (not locally)  
+- Prevents system-level attacks  
+
+### ✅ Data Validation
+- Strict Pydantic schema validation  
+
+### ✅ Hidden Test Cases
+- Hidden inputs/outputs never exposed  
+- Prevents cheating  
+
+### ✅ Backend Protection
+- No direct DB access from frontend  
+- Controlled API layer  
 
 ---
 
 ## 🧠 Database Design
 
 ### PostgreSQL
-
-* Users
-* Admins
-* Attempts
+- Users
+- Attempts (verdict-based tracking)
+- Analytics
 
 ### MongoDB
-
-* Questions
-* Topic & company metadata
-
----
-
-## 📊 Current Project Status
-
-✅ Full-stack platform working
-✅ Dashboard with analytics
-✅ Heatmap activity tracking
-✅ Unique attempt tracking (no duplicates)
-✅ Admin system
-✅ Clean UI/UX
-
-🚧 Code execution engine pending
-🚧 AI recommendations pending
+- Questions
+- Topics
+- Company metadata
+- Test cases
 
 ---
 
-## 🛠️ Upcoming Features
+## 📊 System Architecture
 
-### 🔥 Core
-
-* Code execution (Judge0)
-* Test cases system
-* Output console
-
-### 📊 Advanced Analytics
-
-* Weak topic detection
-* Performance trends
-
-### 🤖 AI Features
-
-* Smart recommendations
-* Personalized learning path
-
----
-
-## 🔄 System Architecture
-
-```
 React (Frontend)
-        ↓
+↓
 FastAPI (Backend)
-        ↓
+↓
 PostgreSQL + MongoDB
-```
+↓
+Judge0 (RapidAPI)
 
 ---
 
@@ -270,58 +198,86 @@ PostgreSQL + MongoDB
 
 ### 1. Clone Repository
 
-```
 git clone https://github.com/Sarthak21052005/Pre-Placement-Platform
 cd Pre-Placement-Platform
-```
 
 ---
 
 ### 2. Backend Setup
 
-```
 python -m venv venv
 
-🪟 Windows
+Windows
+
 venv\Scripts\activate
 
-🍎 Mac / 🐧 Linux
+Mac/Linux
+
 source venv/bin/activate
 
 pip install -r requirements.txt
-```
+
 
 Create `.env`:
 
-```
 DATABASE_URL=postgresql://user:password@localhost/dbname
 MONGO_URL=mongodb://localhost:27017
 SECRET_KEY=your_secret_key
-```
+JUDGE0_API_KEY=your_rapidapi_key
 
-Run:
 
-```
-uvicorn main:app --reload
-```
+Run backend:
+
 
 ---
 
 ### 3. Frontend Setup
 
-```
 cd frontend
-
 npm install
-npm install axios
-npm install @monaco-editor/react
-npm install react-hot-toast
-npm install recharts
-npm install react-calendar-heatmap
-npm install date-fns
-
 npm run dev
-```
+
+
+---
+
+## 📊 Current Project Status
+
+- ✅ Full-stack platform working  
+- ✅ Judge0 integration complete  
+- ✅ Leaderboard system implemented  
+- ✅ Dashboard analytics working  
+- ✅ Heatmap + streak tracking  
+- ✅ Secure execution pipeline  
+
+---
+
+## 🚀 Future Scope
+
+### 🔥 Self-Hosting Judge0
+- Replace RapidAPI with self-hosted Judge0 (Docker)
+- Faster and cost-efficient
+
+---
+
+### 🤖 AI Integration (LLMs)
+- Personalized recommendations  
+- Question generation  
+- Weak topic detection  
+- Interview readiness prediction  
+
+---
+
+### 📊 Advanced Analytics
+- Accuracy trends  
+- Performance insights  
+- Adaptive difficulty  
+
+---
+
+### 🏆 Competitive Features
+- Weekly leaderboard  
+- Rating system (Codeforces-style)  
+- Global rankings  
 
 ---
 
@@ -337,17 +293,18 @@ This platform combines:
 
 ## 🏁 Conclusion
 
-The platform has evolved into a **data-driven preparation system** with:
+The platform has evolved into a **complete placement preparation ecosystem** with:
 
-* Real-time analytics
-* Activity tracking
-* Structured practice
+- Code execution  
+- Analytics  
+- Competitive ranking  
+- Secure architecture  
 
-Next phase focuses on **AI-powered learning 🚀**
+Future work will focus on **AI-powered learning and scalability 🚀**
 
 ---
 
 ## ⭐ Contribute
 
-Contributions are welcome!
-Let’s build the ultimate placement platform 🚀
+Contributions are welcome!  
+
