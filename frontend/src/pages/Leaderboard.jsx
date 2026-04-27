@@ -5,18 +5,35 @@ import "../styles/leaderboard.css";
 
 function Leaderboard() {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/leaderboard")
-      .then(res => setData(res.data))
-      .catch(err => console.log(err));
+    axios
+      .get("http://localhost:8000/leaderboard")
+      .then((res) => {
+        console.log("LEADERBOARD:", res.data);
+        setData(res.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => setLoading(false));
   }, []);
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <p className="info-text">Loading leaderboard...</p>
+      </>
+    );
+  }
 
   return (
     <div className="dashboard-root">
       <Navbar />
-      <div className="dashboard-grid">
 
+      <div className="dashboard-grid">
         <div className="card leaderboard-card">
           <h2 className="leaderboard-title">🏆 Leaderboard</h2>
 
@@ -25,33 +42,51 @@ function Leaderboard() {
               <tr>
                 <th>Rank</th>
                 <th>Name</th>
-                <th>Submissions</th>
+                <th>Solved</th>
+                <th>Accuracy</th>
               </tr>
             </thead>
 
             <tbody>
               {data.map((user, index) => (
-                <tr key={index} className={index < 3 ? "top-row" : ""}>
-                  <td className="rank-cell" >
-                    {index === 0 && "1"}
-                    {index === 1 && "2"}
-                    {index === 2 && "3"}
-                    {index > 2 && `#${index + 1}`}
+                <tr
+                  key={user.user_id || index}
+                  className={index < 3 ? "top-row" : ""}
+                >
+                  {/* 🔥 Rank (from backend) */}
+                  <td className="rank-cell">
+                    {user.rank === 1 && "🥇"}
+                    {user.rank === 2 && "🥈"}
+                    {user.rank === 3 && "🥉"}
+                    {user.rank > 3 && `#${user.rank}`}
                   </td>
 
+                  {/* Name */}
                   <td className="name-cell">{user.name}</td>
 
+                  {/* Solved */}
                   <td className="score-cell">
                     <span className="score-badge">
-                      {user.submissions}
+                      {user.solved}
                     </span>
+                  </td>
+
+                  {/* 🔥 Accuracy */}
+                  <td className="accuracy-cell">
+                    {user.accuracy !== undefined
+                      ? `${user.accuracy}%`
+                      : "--"}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
 
+          {/* Empty state */}
+          {data.length === 0 && (
+            <p className="info-text">No leaderboard data yet.</p>
+          )}
+        </div>
       </div>
     </div>
   );

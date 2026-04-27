@@ -14,19 +14,27 @@ function DashBoard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+const user = localStorage.getItem("user_name");
+const userId = parseInt(localStorage.getItem("user_id"));
 
-  const user = localStorage.getItem("user_name");
-  const userId = localStorage.getItem("user_id");
+useEffect(() => {
+  if (!userId || isNaN(userId)) {
+    setLoading(false);
+    return;
+  }
 
-  useEffect(() => {
-    if (!userId) return;
-
-    axios
-      .get(`http://localhost:8000/attempts/stats/${userId}`)
-      .then((res) => setStats(res.data))
-      .catch(() => setError("Failed to load stats"))
-      .finally(() => setLoading(false));
-  }, [userId]);
+  axios
+    .get(`http://localhost:8000/attempts/stats/${userId}`)
+    .then((res) => {
+      console.log("STATS:", res.data);
+      setStats(res.data);
+    })
+    .catch((err) => {
+      console.error(err);
+      setError("Failed to load stats");
+    })
+    .finally(() => setLoading(false));
+}, [userId]);
 
   if (!userId) return <p className="info-text">Please login first.</p>;
   if (loading) return <p className="info-text">Loading dashboard…</p>;

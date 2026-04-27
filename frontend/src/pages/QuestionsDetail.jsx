@@ -95,7 +95,7 @@ function QuestionDetail() {
         question_name: question.title,
         company_names: question.company,
         difficulty: question.difficulty,
-        status: verdict === "Accepted" ? "solved" : "attempted",
+        verdict: res.data.verdict,
       });
       toast.success("Accepted 🎉");
     } catch (err) {
